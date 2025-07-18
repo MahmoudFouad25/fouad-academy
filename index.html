@@ -536,275 +536,525 @@
     console.log('Firebase تم تحميله بنجاح ✅');
 </script>
 
-<!-- استبدل الجزء الخاص بأزرار Google في نهاية index.html بهذا الكود -->
+<!-- أضف هذا الكود في نهاية ملف index.html (بدل الكود الموجود) -->
 
-<script>
-// إضافة أزرار Google بشكل صحيح
-function addGoogleButtons() {
-    console.log('إضافة أزرار Google...');
+<!-- Firebase Real Authentication -->
+<script type="module">
+    // Import Firebase modules  
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+    import { 
+        getAuth, 
+        signInWithPopup, 
+        GoogleAuthProvider, 
+        signOut, 
+        onAuthStateChanged,
+        signInWithEmailAndPassword,
+        createUserWithEmailAndPassword,
+        updateProfile
+    } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+    import { 
+        getFirestore, 
+        doc, 
+        setDoc, 
+        getDoc, 
+        updateDoc 
+    } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+    // Firebase configuration (من الكود القديم)
+    const firebaseConfig = {
+        apiKey: "AIzaSyBAcPzPzIDYHvezf5klAwFzU0gmoo_AsCo",
+        authDomain: "fouad-academy.firebaseapp.com",
+        projectId: "fouad-academy",
+        storageBucket: "fouad-academy.firebasestorage.app",
+        messagingSenderId: "553738647199",
+        appId: "1:553738647199:web:4e73c59b115da5be15d4aa",
+        measurementId: "G-M0VML1SRZ4"
+    };
+
+    // Initialize Firebase
+    let app, auth, db, googleProvider;
     
-    // إضافة زر Google لنموذج تسجيل الدخول
-    const loginForm = document.getElementById('loginForm');
-    if (loginForm && !loginForm.querySelector('.google-login-btn')) {
-        const googleLoginBtn = document.createElement('button');
-        googleLoginBtn.type = 'button';
-        googleLoginBtn.className = 'btn btn-primary btn-full google-login-btn';
-        googleLoginBtn.style.cssText = `
-            background: linear-gradient(45deg, #db4437, #c23321) !important;
-            color: white !important;
-            margin-top: 15px;
-            border: none;
-            font-weight: bold;
-        `;
-        googleLoginBtn.innerHTML = '🌐 تسجيل الدخول بـ Google';
+    try {
+        app = initializeApp(firebaseConfig);
+        auth = getAuth(app);
+        db = getFirestore(app);
+        googleProvider = new GoogleAuthProvider();
         
-        // ربط الحدث
-        googleLoginBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            console.log('تم النقر على زر Google للدخول');
-            
-            if (window.loginWithGoogle) {
-                window.loginWithGoogle();
-            } else if (window.firebaseAuth) {
-                window.firebaseAuth.loginWithGoogle();
-            } else {
-                // fallback للتجربة
-                console.log('Firebase غير متاح، استخدام نظام تجريبي...');
-                window.showNotification('جاري تطوير تسجيل الدخول بـ Google...', 'info');
-                
-                // محاكاة تسجيل دخول Google
-                setTimeout(() => {
-                    const mockGoogleUser = {
-                        id: 'google_user_1',
-                        name: 'مستخدم Google',
-                        email: 'test@gmail.com',
-                        role: 'student',
-                        joinDate: new Date().toISOString(),
-                        enrolledCourses: [1]
-                    };
-                    
-                    if (window.authManager) {
-                        window.authManager.currentUser = mockGoogleUser;
-                        window.authManager.saveSession(mockGoogleUser);
-                        window.currentUser = mockGoogleUser;
-                        
-                        window.showNotification('تم تسجيل الدخول بـ Google بنجاح!', 'success');
-                        window.closeAuthModal();
-                        window.updateNavigationState();
-                    }
-                }, 1000);
-            }
-        });
+        // إعداد Google Provider
+        googleProvider.addScope('email');
+        googleProvider.addScope('profile');
         
-        // إضافة الزر للنموذج
-        const submitBtn = loginForm.querySelector('button[type="submit"]');
-        if (submitBtn) {
-            submitBtn.parentNode.insertBefore(googleLoginBtn, submitBtn.nextSibling);
-        } else {
-            loginForm.appendChild(googleLoginBtn);
+        console.log('✅ Firebase تم تحميله بنجاح!');
+    } catch (error) {
+        console.error('❌ خطأ في تحميل Firebase:', error);
+        console.log('🔄 سيتم استخدام النظام المحلي...');
+    }
+
+    // Admin emails
+    const ADMIN_EMAILS = [
+        "coach.mahmoud.fouad@gmail.com",
+        "enneagram.compass@gmail.com", 
+        "mahmoudfouad25@gmail.com"
+    ];
+
+    // Real Firebase Auth Manager
+    class RealFirebaseAuth {
+        constructor() {
+            this.currentUser = null;
+            this.isFirebaseReady = !!auth;
+            this.init();
         }
-        
-        console.log('تم إضافة زر Google لتسجيل الدخول ✅');
-    }
 
-    // إضافة زر Google لنموذج التسجيل
-    const registerForm = document.getElementById('registerForm');
-    if (registerForm && !registerForm.querySelector('.google-register-btn')) {
-        const googleRegisterBtn = document.createElement('button');
-        googleRegisterBtn.type = 'button';
-        googleRegisterBtn.className = 'btn btn-primary btn-full google-register-btn';
-        googleRegisterBtn.style.cssText = `
-            background: linear-gradient(45deg, #db4437, #c23321) !important;
-            color: white !important;
-            margin-top: 15px;
-            border: none;
-            font-weight: bold;
-        `;
-        googleRegisterBtn.innerHTML = '🌐 إنشاء حساب بـ Google';
-        
-        // ربط الحدث
-        googleRegisterBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            console.log('تم النقر على زر Google للتسجيل');
-            
-            if (window.loginWithGoogle) {
-                window.loginWithGoogle();
-            } else if (window.firebaseAuth) {
-                window.firebaseAuth.loginWithGoogle();
-            } else {
-                // fallback للتجربة
-                console.log('Firebase غير متاح، استخدام نظام تجريبي...');
-                window.showNotification('جاري تطوير التسجيل بـ Google...', 'info');
+        init() {
+            if (this.isFirebaseReady) {
+                console.log('🔥 تهيئة Firebase الحقيقي...');
                 
-                // محاكاة تسجيل Google
-                setTimeout(() => {
-                    const mockGoogleUser = {
-                        id: 'google_user_' + Date.now(),
-                        name: 'مستخدم جديد من Google',
-                        email: 'newuser@gmail.com',
-                        role: 'student',
-                        joinDate: new Date().toISOString(),
-                        enrolledCourses: [1]
-                    };
+                // مراقبة حالة المصادقة
+                onAuthStateChanged(auth, async (user) => {
+                    console.log('🔄 تغيير حالة المصادقة:', user ? user.email : 'غير مسجل');
                     
-                    if (window.authManager) {
-                        window.authManager.currentUser = mockGoogleUser;
-                        window.authManager.saveSession(mockGoogleUser);
-                        window.currentUser = mockGoogleUser;
-                        
-                        window.showNotification('تم إنشاء حساب جديد بـ Google بنجاح!', 'success');
-                        window.closeAuthModal();
-                        window.updateNavigationState();
+                    if (user) {
+                        await this.handleUserSignIn(user);
+                    } else {
+                        this.handleUserSignOut();
                     }
-                }, 1000);
-            }
-        });
-        
-        // إضافة الزر للنموذج
-        const submitBtn = registerForm.querySelector('button[type="submit"]');
-        if (submitBtn) {
-            submitBtn.parentNode.insertBefore(googleRegisterBtn, submitBtn.nextSibling);
-        } else {
-            registerForm.appendChild(googleRegisterBtn);
-        }
-        
-        console.log('تم إضافة زر Google للتسجيل ✅');
-    }
-}
-
-// تشغيل الوظيفة عند تحميل الصفحة
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('الصفحة تم تحميلها، جاري إضافة أزرار Google...');
-    
-    // إضافة الأزرار مباشرة
-    addGoogleButtons();
-    
-    // إضافة الأزرار عند فتح النوافذ المنبثقة
-    const originalShowLogin = window.showLogin;
-    if (originalShowLogin) {
-        window.showLogin = function() {
-            originalShowLogin();
-            setTimeout(addGoogleButtons, 100);
-        };
-    }
-    
-    const originalShowRegister = window.showRegister;
-    if (originalShowRegister) {
-        window.showRegister = function() {
-            originalShowRegister();
-            setTimeout(addGoogleButtons, 100);
-        };
-    }
-});
-
-// وظيفة تسجيل دخول Google مبسطة للتجربة
-window.loginWithGoogle = function() {
-    console.log('🌐 بدء عملية تسجيل دخول Google...');
-    
-    // محاكاة عملية OAuth
-    window.showNotification('جاري الاتصال بـ Google...', 'info');
-    
-    setTimeout(() => {
-        // محاكاة اختيار حساب Google
-        const mockAccounts = [
-            { name: 'محمود فؤاد', email: 'coach.mahmoud.fouad@gmail.com', role: 'admin' },
-            { name: 'مستخدم تجريبي', email: 'test@gmail.com', role: 'student' }
-        ];
-        
-        // اختيار حساب عشوائي للتجربة
-        const selectedAccount = mockAccounts[Math.floor(Math.random() * mockAccounts.length)];
-        
-        const googleUser = {
-            id: 'google_' + Date.now(),
-            name: selectedAccount.name,
-            email: selectedAccount.email,
-            role: selectedAccount.role,
-            joinDate: new Date().toISOString(),
-            enrolledCourses: [1],
-            avatar: null,
-            preferences: { language: 'ar', notifications: true },
-            profile: { provider: 'google' }
-        };
-        
-        // حفظ في النظام
-        if (window.authManager) {
-            window.authManager.currentUser = googleUser;
-            window.authManager.saveSession(googleUser);
-            window.currentUser = googleUser;
-            
-            // إضافة للمستخدمين إذا لم يكن موجوداً
-            const users = JSON.parse(localStorage.getItem('fouad_academy_users') || '[]');
-            const existingUser = users.find(u => u.email === googleUser.email);
-            
-            if (!existingUser) {
-                users.push({
-                    ...googleUser,
-                    password: 'google_oauth_' + Date.now() // كلمة مرور وهمية للحسابات من Google
                 });
-                localStorage.setItem('fouad_academy_users', JSON.stringify(users));
-            }
-            
-            window.showNotification(`مرحباً بك، ${googleUser.name}! تم تسجيل الدخول بـ Google بنجاح`, 'success');
-            window.closeAuthModal();
-            window.updateNavigationState();
-            
-            // إذا كان آدمن، انتقل للوحة الإدارة
-            if (googleUser.role === 'admin') {
-                setTimeout(() => {
-                    window.location.href = 'admin/dashboard.html';
-                }, 1500);
+            } else {
+                console.log('⚠️ Firebase غير متاح - استخدام النظام المحلي');
+                this.useFallbackAuth();
             }
         }
-    }, 2000);
-};
 
-console.log('✅ تم تحميل إصلاح Google بنجاح');
+        // معالجة تسجيل دخول المستخدم
+        async handleUserSignIn(user) {
+            try {
+                // إنشاء أو تحديث مستند المستخدم
+                await this.createOrUpdateUserDoc(user);
+                
+                // تحديث المستخدم الحالي
+                const userDoc = await getDoc(doc(db, 'users', user.uid));
+                const userData = userDoc.data();
+                
+                this.currentUser = {
+                    id: user.uid,
+                    name: user.displayName || userData?.name || 'مستخدم',
+                    email: user.email,
+                    avatar: user.photoURL,
+                    role: userData?.isAdmin ? 'admin' : 'student',
+                    provider: user.providerData[0]?.providerId || 'email',
+                    enrolledCourses: userData?.enrolledCourses || [1]
+                };
+
+                console.log('✅ تم تسجيل الدخول:', this.currentUser.name);
+                
+                this.updateUI();
+                this.showNotification(`مرحباً بك، ${this.currentUser.name}!`, 'success');
+
+                // إغلاق نافذة المصادقة إذا كانت مفتوحة
+                this.closeAuthModal();
+
+                // انتقال للآدمن إذا لزم الأمر
+                if (this.currentUser.role === 'admin') {
+                    setTimeout(() => {
+                        if (window.location.pathname === '/' || window.location.pathname.includes('index.html')) {
+                            window.location.href = 'admin/dashboard.html';
+                        }
+                    }, 1500);
+                }
+
+            } catch (error) {
+                console.error('خطأ في معالجة تسجيل الدخول:', error);
+                this.showNotification('حدث خطأ في تسجيل الدخول', 'error');
+            }
+        }
+
+        // معالجة تسجيل الخروج
+        handleUserSignOut() {
+            this.currentUser = null;
+            this.updateUI();
+            console.log('👋 تم تسجيل الخروج');
+        }
+
+        // إنشاء أو تحديث مستند المستخدم
+        async createOrUpdateUserDoc(user) {
+            const userRef = doc(db, 'users', user.uid);
+            const userDoc = await getDoc(userRef);
+
+            const userData = {
+                uid: user.uid,
+                name: user.displayName || 'مستخدم جديد',
+                email: user.email,
+                avatar: user.photoURL || null,
+                lastLogin: new Date().toISOString(),
+                isAdmin: ADMIN_EMAILS.includes(user.email.toLowerCase())
+            };
+
+            if (!userDoc.exists()) {
+                // مستخدم جديد
+                userData.joinDate = new Date().toISOString();
+                userData.enrolledCourses = [1]; // دورة مجانية
+                userData.completedCourses = [];
+                userData.totalWatchTime = 0;
+                
+                await setDoc(userRef, userData);
+                
+                // إنشاء سجل اشتراك في الدورة المجانية
+                await setDoc(doc(db, 'enrollments', `${user.uid}_1`), {
+                    userId: user.uid,
+                    courseId: 1,
+                    enrolledAt: new Date().toISOString(),
+                    progress: 0,
+                    completed: false,
+                    watchedVideos: []
+                });
+                
+                console.log('👤 تم إنشاء مستخدم جديد');
+            } else {
+                // تحديث المستخدم الموجود
+                await updateDoc(userRef, {
+                    lastLogin: userData.lastLogin,
+                    avatar: userData.avatar
+                });
+                
+                console.log('🔄 تم تحديث بيانات المستخدم');
+            }
+        }
+
+        // تسجيل دخول Google الحقيقي
+        async realGoogleLogin() {
+            if (!this.isFirebaseReady) {
+                this.showNotification('خدمة Google غير متاحة حالياً', 'error');
+                return;
+            }
+
+            try {
+                console.log('🌐 بدء تسجيل دخول Google الحقيقي...');
+                this.showNotification('جاري فتح نافذة Google...', 'info');
+
+                // فتح نافذة Google الحقيقية
+                const result = await signInWithPopup(auth, googleProvider);
+                const user = result.user;
+                
+                console.log('✅ تم تسجيل الدخول بـ Google بنجاح:', user.email);
+                
+                // Firebase سيتولى باقي العملية عبر onAuthStateChanged
+
+            } catch (error) {
+                console.error('❌ خطأ في تسجيل دخول Google:', error);
+                
+                if (error.code === 'auth/popup-closed-by-user') {
+                    this.showNotification('تم إغلاق نافذة Google', 'warning');
+                } else if (error.code === 'auth/popup-blocked') {
+                    this.showNotification('تم حظر النافذة المنبثقة. يرجى السماح بالنوافذ المنبثقة', 'error');
+                } else {
+                    this.showNotification('حدث خطأ في تسجيل الدخول بـ Google', 'error');
+                }
+            }
+        }
+
+        // تسجيل دخول بالبريد الإلكتروني
+        async emailLogin(email, password) {
+            if (!this.isFirebaseReady) {
+                return this.fallbackEmailLogin(email, password);
+            }
+
+            try {
+                console.log('📧 تسجيل دخول بالبريد الإلكتروني:', email);
+                
+                const result = await signInWithEmailAndPassword(auth, email, password);
+                console.log('✅ تم تسجيل الدخول بالبريد الإلكتروني');
+                
+                // Firebase سيتولى باقي العملية
+
+            } catch (error) {
+                console.error('❌ خطأ في تسجيل الدخول:', error);
+                
+                const errorMessages = {
+                    'auth/user-not-found': 'البريد الإلكتروني غير مسجل',
+                    'auth/wrong-password': 'كلمة المرور غير صحيحة',
+                    'auth/invalid-email': 'البريد الإلكتروني غير صحيح',
+                    'auth/too-many-requests': 'تم تجاوز عدد المحاولات. حاول لاحقاً'
+                };
+
+                const errorMessage = errorMessages[error.code] || 'حدث خطأ في تسجيل الدخول';
+                this.showNotification(errorMessage, 'error');
+                throw error;
+            }
+        }
+
+        // التسجيل بالبريد الإلكتروني
+        async emailRegister(name, email, password) {
+            if (!this.isFirebaseReady) {
+                return this.fallbackEmailRegister(name, email, password);
+            }
+
+            try {
+                console.log('📝 إنشاء حساب جديد:', email);
+                
+                const result = await createUserWithEmailAndPassword(auth, email, password);
+                const user = result.user;
+
+                // تحديث الاسم
+                await updateProfile(user, { displayName: name });
+                
+                console.log('✅ تم إنشاء الحساب بنجاح');
+                
+                // Firebase سيتولى باقي العملية
+
+            } catch (error) {
+                console.error('❌ خطأ في إنشاء الحساب:', error);
+                
+                const errorMessages = {
+                    'auth/email-already-in-use': 'البريد الإلكتروني مستخدم بالفعل',
+                    'auth/weak-password': 'كلمة المرور ضعيفة',
+                    'auth/invalid-email': 'البريد الإلكتروني غير صحيح'
+                };
+
+                const errorMessage = errorMessages[error.code] || 'حدث خطأ في إنشاء الحساب';
+                this.showNotification(errorMessage, 'error');
+                throw error;
+            }
+        }
+
+        // تسجيل الخروج الحقيقي
+        async realLogout() {
+            if (!this.isFirebaseReady) {
+                this.currentUser = null;
+                this.updateUI();
+                this.showNotification('تم تسجيل الخروج', 'info');
+                return;
+            }
+
+            try {
+                await signOut(auth);
+                this.showNotification('تم تسجيل الخروج بنجاح', 'success');
+                
+                // العودة للصفحة الرئيسية إذا كان في صفحة إدارية
+                if (window.location.pathname.includes('admin/')) {
+                    window.location.href = '../index.html';
+                }
+                
+            } catch (error) {
+                console.error('خطأ في تسجيل الخروج:', error);
+                this.showNotification('حدث خطأ في تسجيل الخروج', 'error');
+            }
+        }
+
+        // النظام الاحتياطي (نفس النظام السابق)
+        useFallbackAuth() {
+            if (window.authManager) {
+                this.currentUser = window.authManager.getCurrentUser();
+                this.updateUI();
+            }
+        }
+
+        fallbackEmailLogin(email, password) {
+            if (window.authManager) {
+                return window.authManager.handleLogin();
+            }
+        }
+
+        fallbackEmailRegister(name, email, password) {
+            if (window.authManager) {
+                return window.authManager.handleRegister();
+            }
+        }
+
+        // باقي الوظائف المساعدة
+        updateUI() {
+            const navAuth = document.querySelector('.nav-auth');
+            if (!navAuth) return;
+
+            if (this.currentUser) {
+                navAuth.innerHTML = `
+                    <div class="user-info" style="display: flex; align-items: center; gap: 1rem;">
+                        ${this.currentUser.avatar ? 
+                            `<img src="${this.currentUser.avatar}" alt="صورة المستخدم" style="width: 32px; height: 32px; border-radius: 50%;">` : 
+                            '<div style="width: 32px; height: 32px; background: #3b82f6; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 0.8rem;">' + this.currentUser.name.charAt(0) + '</div>'
+                        }
+                        <span>مرحباً، ${this.currentUser.name}</span>
+                        <button class="btn btn-outline" onclick="realAuth.goToDashboard()">
+                            ${this.currentUser.role === 'admin' ? 'لوحة الإدارة' : 'لوحتي'}
+                        </button>
+                        <button class="btn btn-primary" onclick="realAuth.realLogout()">خروج</button>
+                    </div>
+                `;
+            } else {
+                navAuth.innerHTML = `
+                    <button class="btn btn-outline" onclick="realAuth.showLogin()">تسجيل الدخول</button>
+                    <button class="btn btn-primary" onclick="realAuth.showRegister()">انضم الآن</button>
+                `;
+            }
+        }
+
+        showLogin() {
+            if (window.authManager) {
+                window.authManager.showLogin();
+                // إضافة زر Google الحقيقي
+                setTimeout(() => this.addRealGoogleButton(), 200);
+            }
+        }
+
+        showRegister() {
+            if (window.authManager) {
+                window.authManager.showRegister();
+                // إضافة زر Google الحقيقي
+                setTimeout(() => this.addRealGoogleButton(), 200);
+            }
+        }
+
+        closeAuthModal() {
+            if (window.authManager) {
+                window.authManager.closeAuthModal();
+            }
+        }
+
+        goToDashboard() {
+            if (!this.currentUser) {
+                this.showLogin();
+                return;
+            }
+            
+            if (this.currentUser.role === 'admin') {
+                window.location.href = 'admin/dashboard.html';
+            } else {
+                this.showNotification('لوحة الطالب ستكون متاحة قريباً', 'info');
+            }
+        }
+
+        // إضافة زر Google الحقيقي
+        addRealGoogleButton() {
+            // إزالة الأزرار القديمة أولاً
+            document.querySelectorAll('.google-btn, .real-google-btn').forEach(btn => btn.remove());
+
+            const forms = ['loginForm', 'registerForm'];
+            
+            forms.forEach(formId => {
+                const form = document.getElementById(formId);
+                if (form) {
+                    const realGoogleBtn = document.createElement('button');
+                    realGoogleBtn.type = 'button';
+                    realGoogleBtn.className = 'btn btn-primary btn-full real-google-btn';
+                    realGoogleBtn.innerHTML = `
+                        <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                            <svg width="18" height="18" viewBox="0 0 24 24">
+                                <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                                <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                                <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                                <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                            </svg>
+                            ${formId === 'loginForm' ? 'تسجيل الدخول بـ Google' : 'إنشاء حساب بـ Google'}
+                        </div>
+                    `;
+                    realGoogleBtn.style.cssText = `
+                        background: #fff !important;
+                        color: #333 !important;
+                        border: 1px solid #ddd !important;
+                        margin-top: 15px;
+                        font-weight: 500;
+                        transition: all 0.3s ease;
+                    `;
+                    
+                    realGoogleBtn.addEventListener('mouseenter', () => {
+                        realGoogleBtn.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+                        realGoogleBtn.style.transform = 'translateY(-1px)';
+                    });
+                    
+                    realGoogleBtn.addEventListener('mouseleave', () => {
+                        realGoogleBtn.style.boxShadow = 'none';
+                        realGoogleBtn.style.transform = 'translateY(0)';
+                    });
+
+                    realGoogleBtn.onclick = () => this.realGoogleLogin();
+                    form.appendChild(realGoogleBtn);
+                }
+            });
+        }
+
+        showNotification(message, type = 'info') {
+            if (window.authManager && window.authManager.showNotification) {
+                window.authManager.showNotification(message, type);
+            } else {
+                console.log(`${type.toUpperCase()}: ${message}`);
+            }
+        }
+
+        getCurrentUser() {
+            return this.currentUser;
+        }
+
+        hasRole(role) {
+            return this.currentUser && this.currentUser.role === role;
+        }
+    }
+
+    // إنشاء مثيل من النظام الحقيقي
+    const realAuth = new RealFirebaseAuth();
+
+    // ربط بالنطاق العام
+    window.realAuth = realAuth;
+    window.firebaseApp = app;
+    window.firebaseAuth = auth;
+    window.firebaseDb = db;
+
+    // تحديث الوظائف العامة لتستخدم النظام الحقيقي
+    window.loginWithGoogle = () => realAuth.realGoogleLogin();
+    window.logout = () => realAuth.realLogout();
+    window.updateNavigationState = () => realAuth.updateUI();
+    window.goToDashboard = () => realAuth.goToDashboard();
+
+    // تحديث نماذج المصادقة للاستخدام النظام الحقيقي
+    window.handleLogin = async function(event) {
+        if (event) event.preventDefault();
+        
+        const email = document.getElementById('loginEmail').value.trim();
+        const password = document.getElementById('loginPassword').value;
+        
+        if (!email || !password) {
+            realAuth.showNotification('يرجى ملء جميع الحقول', 'error');
+            return;
+        }
+
+        try {
+            await realAuth.emailLogin(email, password);
+        } catch (error) {
+            // الخطأ تم التعامل معه في الدالة
+        }
+    };
+
+    window.handleRegister = async function(event) {
+        if (event) event.preventDefault();
+        
+        const name = document.getElementById('registerName').value.trim();
+        const email = document.getElementById('registerEmail').value.trim();
+        const password = document.getElementById('registerPassword').value;
+        const confirmPassword = document.getElementById('registerConfirmPassword').value;
+        
+        if (!name || !email || !password || !confirmPassword) {
+            realAuth.showNotification('يرجى ملء جميع الحقول', 'error');
+            return;
+        }
+
+        if (password !== confirmPassword) {
+            realAuth.showNotification('كلمة المرور وتأكيدها غير متطابقتين', 'error');
+            return;
+        }
+
+        if (password.length < 6) {
+            realAuth.showNotification('كلمة المرور يجب أن تكون 6 أحرف على الأقل', 'error');
+            return;
+        }
+
+        try {
+            await realAuth.emailRegister(name, email, password);
+        } catch (error) {
+            // الخطأ تم التعامل معه في الدالة
+        }
+    };
+
+    console.log('🔥 Firebase الحقيقي تم تحميله بنجاح!');
+
 </script>
-
-<!-- إضافة أيقونة Google للأزرار -->
-<style>
-.google-login-btn:before,
-.google-register-btn:before {
-    content: '🌐';
-    margin-left: 8px;
-    font-size: 1.2em;
-}
-
-.google-login-btn:hover,
-.google-register-btn:hover {
-    background: linear-gradient(45deg, #c23321, #a52a2a) !important;
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(219, 68, 55, 0.4);
-}
-
-/* تحسين مظهر الأزرار */
-.btn.google-login-btn,
-.btn.google-register-btn {
-    position: relative;
-    overflow: hidden;
-    transition: all 0.3s ease;
-}
-
-.btn.google-login-btn:after,
-.btn.google-register-btn:after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-    transition: width 0.3s ease, height 0.3s ease;
-}
-
-.btn.google-login-btn:active:after,
-.btn.google-register-btn:active:after {
-    width: 300px;
-    height: 300px;
-}
-</style>
 </body>
 </html>
 
