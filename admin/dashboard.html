@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة الإدارة - منصة الفؤاد التعليمية</title>
+    <link rel="stylesheet" href="../shared/css/main.css">
+    <link rel="stylesheet" href="../shared/css/admin.css">
+</head>
+<body class="admin-body">
+    <!-- شريط التنقل الإداري -->
+    <nav class="admin-nav">
+        <div class="admin-nav-container">
+            <div class="admin-nav-brand">
+                <img src="../shared/images/logo.png" alt="شعار المنصة" class="nav-logo">
+                <h1>لوحة الإدارة</h1>
+            </div>
+            
+            <div class="admin-nav-menu">
+                <a href="#dashboard" class="admin-nav-link active" data-page="dashboard">
+                    <span class="nav-icon">📊</span>
+                    الرئيسية
+                </a>
+                <a href="#courses" class="admin-nav-link" data-page="courses">
+                    <span class="nav-icon">📚</span>
+                    إدارة الدورات
+                </a>
+                <a href="#users" class="admin-nav-link" data-page="users">
+                    <span class="nav-icon">👥</span>
+                    إدارة المستخدمين
+                </a>
+                <a href="#payments" class="admin-nav-link" data-page="payments">
+                    <span class="nav-icon">💳</span>
+                    المدفوعات
+                </a>
+                <a href="#content" class="admin-nav-link" data-page="content">
+                    <span class="nav-icon">📄</span>
+                    المحتوى
+                </a>
+                <a href="#analytics" class="admin-nav-link" data-page="analytics">
+                    <span class="nav-icon">📈</span>
+                    التقارير
+                </a>
+            </div>
+            
+            <div class="admin-nav-user">
+                <div class="user-avatar" id="adminAvatar">م</div>
+                <div class="user-info">
+                    <span class="user-name" id="adminName">محمود فؤاد</span>
+                    <span class="user-role">مدير المنصة</span>
+                </div>
+                <div class="user-actions">
+                    <button class="btn-icon" onclick="toggleNotifications()" title="الإشعارات">
+                        <span class="notification-icon">🔔</span>
+                        <span class="notification-badge" id="notificationCount">3</span>
+                    </button>
+                    <button class="btn-icon" onclick="toggleUserMenu()" title="القائمة">
+                        <span>⚙️</span>
+                    </button>
+                    <a href="../index.html" class="btn btn-outline-light">العودة للموقع</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- المحتوى الرئيسي -->
+    <main class="admin-main">
+        <!-- الشريط الجانبي -->
+        <aside class="admin-sidebar">
+            <div class="sidebar-section">
+                <h3>الإحصائيات السريعة</h3>
+                <div class="quick-stats">
+                    <div class="stat-card mini">
+                        <span class="stat-icon">👥</span>
+                        <div class="stat-info">
+                            <span class="stat-number" id="totalUsersQuick">0</span>
+                            <span class="stat-label">مستخدم</span>
+                        </div>
+                    </div>
+                    <div class="stat-card mini">
+                        <span class="stat-icon">📚</span>
+                        <div class="stat-info">
+                            <span class="stat-number" id="totalCoursesQuick">0</span>
+                            <span class="stat-label">دورة</span>
+                        </div>
+                    </div>
+                    <div class="stat-card mini">
+                        <span class="stat-icon">💰</span>
+                        <div class="stat-info">
+                            <span class="stat-number" id="totalRevenueQuick">0</span>
+                            <span class="stat-label">جنيه</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <h3>إجراءات سريعة</h3>
+                <div class="quick-actions">
+                    <button class="btn btn-primary btn-full" onclick="showCreateCourseModal()">
+                        <span>➕</span> إنشاء دورة جديدة
+                    </button>
+                    <button class="btn btn-outline btn-full" onclick="showBulkActionsModal()">
+                        <span>⚡</span> إجراءات مجمعة
+                    </button>
+                    <button class="btn btn-success btn-full" onclick="exportData()">
+                        <span>📊</span> تصدير التقارير
+                    </button>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <h3>آخر الأنشطة</h3>
+                <div class="recent-activities" id="recentActivities">
+                    <!-- ستُحمّل ديناميكياً -->
+                </div>
+            </div>
+        </aside>
+
+        <!-- المحتوى المركزي -->
+        <div class="admin-content">
+            <!-- صفحة الرئيسية -->
+            <div id="dashboardPage" class="admin-page active">
+                <div class="page-header">
+                    <h1>لوحة الإدارة الرئيسية</h1>
+                    <p>مرحباً بك في لوحة إدارة منصة الفؤاد التعليمية</p>
+                </div>
+
+                <!-- الإحصائيات الرئيسية -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-icon">👥</span>
+                            <h3>إجمالي المستخدمين</h3>
+                        </div>
+                        <div class="stat-body">
+                            <span class="stat-number" id="totalUsers">0</span>
+                            <span class="stat-change positive" id="usersChange">+12%</span>
+                        </div>
+                        <div class="stat-footer">
+                            <span class="stat-period">منذ الشهر الماضي</span>
+                            <button class="btn-link" onclick="navigateToPage('users')">عرض التفاصيل</button>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-icon">📚</span>
+                            <h3>الدورات المتاحة</h3>
+                        </div>
+                        <div class="stat-body">
+                            <span class="stat-number" id="totalCourses">0</span>
+                            <span class="stat-change positive" id="coursesChange">+5%</span>
+                        </div>
+                        <div class="stat-footer">
+                            <span class="stat-period">منذ الشهر الماضي</span>
+                            <button class="btn-link" onclick="navigateToPage('courses')">إدارة الدورات</button>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-icon">💰</span>
+                            <h3>إجمالي الإيرادات</h3>
+                        </div>
+                        <div class="stat-body">
+                            <span class="stat-number" id="totalRevenue">0</span>
+                            <span class="stat-change positive" id="revenueChange">+18%</span>
+                        </div>
+                        <div class="stat-footer">
+                            <span class="stat-period">منذ الشهر الماضي</span>
+                            <button class="btn-link" onclick="navigateToPage('payments')">عرض المدفوعات</button>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-icon">⭐</span>
+                            <h3>متوسط التقييم</h3>
+                        </div>
+                        <div class="stat-body">
+                            <span class="stat-number" id="averageRating">4.8</span>
+                            <span class="stat-change positive" id="ratingChange">+0.2</span>
+                        </div>
+                        <div class="stat-footer">
+                            <span class="stat-period">من أصل 5 نجوم</span>
+                            <button class="btn-link" onclick="navigateToPage('analytics')">عرض التفاصيل</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- الرسوم البيانية -->
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3>نمو المستخدمين</h3>
+                            <div class="chart-controls">
+                                <select class="chart-period">
+                                    <option value="7d">آخر 7 أيام</option>
+                                    <option value="30d" selected>آخر 30 يوم</option>
+                                    <option value="90d">آخر 3 أشهر</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="chart-body">
+                            <canvas id="usersChart" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3>الإيرادات الشهرية</h3>
+                            <div class="chart-controls">
+                                <select class="chart-period">
+                                    <option value="6m" selected>آخر 6 أشهر</option>
+                                    <option value="12m">آخر سنة</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="chart-body">
+                            <canvas id="revenueChart" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- الجداول التفاعلية -->
+                <div class="dashboard-tables">
+                    <div class="table-card">
+                        <div class="table-header">
+                            <h3>أحدث التسجيلات</h3>
+                            <button class="btn btn-outline" onclick="navigateToPage('users')">عرض الكل</button>
+                        </div>
+                        <div class="table-body">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>اسم المستخدم</th>
+                                        <th>البريد الإلكتروني</th>
+                                        <th>تاريخ التسجيل</th>
+                                        <th>الحالة</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="recentUsersTable">
+                                    <!-- ستُحمّل ديناميكياً -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="table-card">
+                        <div class="table-header">
+                            <h3>أشهر الدورات</h3>
+                            <button class="btn btn-outline" onclick="navigateToPage('courses')">عرض الكل</button>
+                        </div>
+                        <div class="table-body">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>اسم الدورة</th>
+                                        <th>المشتركين</th>
+                                        <th>التقييم</th>
+                                        <th>الحالة</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="popularCoursesTable">
+                                    <!-- ستُحمّل ديناميكياً -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- صفحة إدارة الدورات -->
+            <div id="coursesPage" class="admin-page">
+                <div class="page-header">
+                    <h1>إدارة الدورات التدريبية</h1>
+                    <div class="page-actions">
+                        <button class="btn btn-primary" onclick="showCreateCourseModal()">
+                            <span>➕</span> إنشاء دورة جديدة
+                        </button>
+                        <button class="btn btn-outline" onclick="importCourses()">
+                            <span>📥</span> استيراد دورات
+                        </button>
+                        <button class="btn btn-success" onclick="exportCourses()">
+                            <span>📤</span> تصدير الدورات
+                        </button>
+                    </div>
+                </div>
+
+                <!-- أدوات البحث والفلترة -->
+                <div class="filters-section">
+                    <div class="search-box">
+                        <input type="text" id="courseSearch" placeholder="البحث في الدورات..." class="search-input">
+                        <button class="search-btn" onclick="searchCourses()">🔍</button>
+                    </div>
+                    
+                    <div class="filters-row">
+                        <select id="statusFilter" class="filter-select" onchange="filterCourses()">
+                            <option value="">جميع الحالات</option>
+                            <option value="active">نشطة</option>
+                            <option value="draft">مسودة</option>
+                            <option value="archived">مؤرشفة</option>
+                        </select>
+                        
+                        <select id="levelFilter" class="filter-select" onchange="filterCourses()">
+                            <option value="">جميع المستويات</option>
+                            <option value="مبتدئ">مبتدئ</option>
+                            <option value="متوسط">متوسط</option>
+                            <option value="متقدم">متقدم</option>
+                        </select>
+                        
+                        <select id="priceFilter" class="filter-select" onchange="filterCourses()">
+                            <option value="">جميع الأسعار</option>
+                            <option value="free">مجاني</option>
+                            <option value="paid">مدفوع</option>
+                        </select>
+                        
+                        <button class="btn btn-outline" onclick="resetFilters()">إعادة تعيين</button>
+                    </div>
+                </div>
+
+                <!-- جدول الدورات -->
+                <div class="table-card">
+                    <div class="table-header">
+                        <h3>قائمة الدورات</h3>
+                        <div class="table-controls">
+                            <select class="items-per-page" onchange="changeItemsPerPage(this.value)">
+                                <option value="10">10 عناصر</option>
+                                <option value="25" selected>25 عنصر</option>
+                                <option value="50">50 عنصر</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="table-body">
+                        <table class="data-table" id="coursesTable">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        <input type="checkbox" class="select-all" onchange="toggleSelectAll(this)">
+                                    </th>
+                                    <th>الدورة</th>
+                                    <th>المدرب</th>
+                                    <th>المستوى</th>
+                                    <th>السعر</th>
+                                    <th>المشتركين</th>
+                                    <th>التقييم</th>
+                                    <th>الحالة</th>
+                                    <th>الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="coursesTableBody">
+                                <!-- ستُحمّل ديناميكياً -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="table-footer">
+                        <div class="pagination-info">
+                            عرض <span id="showingFrom">1</span> إلى <span id="showingTo">25</span> من <span id="totalItems">0</span> عنصر
+                        </div>
+                        <div class="pagination" id="coursesPagination">
+                            <!-- ستُحمّل ديناميكياً -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- باقي الصفحات ستُضاف في الملفات التالية -->
+            <div id="usersPage" class="admin-page">
+                <div class="page-header">
+                    <h1>إدارة المستخدمين</h1>
+                    <p>قريباً...</p>
+                </div>
+            </div>
+
+            <div id="paymentsPage" class="admin-page">
+                <div class="page-header">
+                    <h1>إدارة المدفوعات</h1>
+                    <p>قريباً...</p>
+                </div>
+            </div>
+
+            <div id="contentPage" class="admin-page">
+                <div class="page-header">
+                    <h1>إدارة المحتوى</h1>
+                    <p>قريباً...</p>
+                </div>
+            </div>
+
+            <div id="analyticsPage" class="admin-page">
+                <div class="page-header">
+                    <h1>التقارير والتحليلات</h1>
+                    <p>قريباً...</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- النوافذ المنبثقة -->
+    
+    <!-- نافذة إنشاء دورة جديدة -->
+    <div id="createCourseModal" class="modal">
+        <div class="modal-content large-modal">
+            <div class="modal-header">
+                <h2>إنشاء دورة تدريبية جديدة</h2>
+                <button class="modal-close" onclick="closeCreateCourseModal()">&times;</button>
+            </div>
+            
+            <div class="modal-body">
+                <form id="createCourseForm" class="course-form">
+                    <!-- معلومات أساسية -->
+                    <div class="form-section">
+                        <h3>المعلومات الأساسية</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="courseTitle">عنوان الدورة *</label>
+                                <input type="text" id="courseTitle" name="title" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="courseInstructor">المدرب *</label>
+                                <input type="text" id="courseInstructor" name="instructor" value="محمود فؤاد" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="courseDescription">وصف مختصر *</label>
+                            <textarea id="courseDescription" name="description" rows="3" required></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="courseFullDescription">الوصف التفصيلي</label>
+                            <textarea id="courseFullDescription" name="fullDescription" rows="6"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- إعدادات الدورة -->
+                    <div class="form-section">
+                        <h3>إعدادات الدورة</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="courseLevel">المستوى *</label>
+                                <select id="courseLevel" name="level" required>
+                                    <option value="">اختر المستوى</option>
+                                    <option value="مبتدئ">مبتدئ</option>
+                                    <option value="متوسط">متوسط</option>
+                                    <option value="متقدم">متقدم</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="coursePrice">السعر (جنيه) *</label>
+                                <input type="number" id="coursePrice" name="price" min="0" step="0.01" value="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="courseDuration">المدة المتوقعة</label>
+                                <input type="text" id="courseDuration" name="duration" placeholder="مثال: 8 أسابيع">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="courseIcon">أيقونة الدورة</label>
+                                <input type="text" id="courseIcon" name="icon" placeholder="مثال: 📚" maxlength="2">
+                            </div>
+                            <div class="form-group">
+                                <label for="courseStatus">حالة الدورة *</label>
+                                <select id="courseStatus" name="status" required>
+                                    <option value="draft">مسودة</option>
+                                    <option value="active">نشطة</option>
+                                    <option value="archived">مؤرشفة</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="courseIsFree" name="isFree" onchange="togglePriceField()">
+                                    دورة مجانية
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- محتوى الدورة -->
+                    <div class="form-section">
+                        <h3>محتوى الدورة</h3>
+                        <div id="courseSections">
+                            <!-- ستُضاف الأقسام ديناميكياً -->
+                        </div>
+                        <button type="button" class="btn btn-outline" onclick="addCourseSection()">
+                            <span>➕</span> إضافة قسم جديد
+                        </button>
+                    </div>
+
+                    <!-- إعدادات متقدمة -->
+                    <div class="form-section">
+                        <h3>إعدادات متقدمة</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="courseStartDate">تاريخ البداية</label>
+                                <input type="datetime-local" id="courseStartDate" name="startDate">
+                            </div>
+                            <div class="form-group">
+                                <label for="courseEndDate">تاريخ النهاية</label>
+                                <input type="datetime-local" id="courseEndDate" name="endDate">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="coursePrerequisites">المتطلبات السابقة</label>
+                            <textarea id="coursePrerequisites" name="prerequisites" rows="3"></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="courseTags">الكلمات المفتاحية (مفصولة بفواصل)</label>
+                            <input type="text" id="courseTags" name="tags" placeholder="تطوير ذاتي، علم نفس، تأمل">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" onclick="closeCreateCourseModal()">إلغاء</button>
+                <button type="button" class="btn btn-primary" onclick="saveDraft()">حفظ كمسودة</button>
+                <button type="submit" form="createCourseForm" class="btn btn-success">إنشاء الدورة</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة الإشعارات -->
+    <div id="notificationsPanel" class="notifications-panel">
+        <div class="notifications-header">
+            <h3>الإشعارات</h3>
+            <button class="btn-link" onclick="markAllAsRead()">تعيين الكل كمقروء</button>
+        </div>
+        <div class="notifications-body" id="notificationsList">
+            <!-- ستُحمّل ديناميكياً -->
+        </div>
+    </div>
+
+    <!-- تحميل المكتبات والسكريبت -->
+    <script src="../shared/js/main.js"></script>
+    <script src="../shared/js/auth.js"></script>
+    <script src="../shared/js/admin.js"></script>
+    <script src="../shared/js/course-manager.js"></script>
+</body>
+</html>
