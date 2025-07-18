@@ -229,3 +229,344 @@
     <script src="shared/js/auth.js"></script>
 </body>
 </html>
+
+<!-- أضف هذا في نهاية ملف index.html قبل إغلاق </body> -->
+
+<!-- Firebase Configuration Script -->
+<script type="module">
+    // Import Firebase modules
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, 
+             signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged, updateProfile } from 
+             'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+    import { getFirestore, doc, setDoc, getDoc, collection, getDocs, updateDoc, query, where, orderBy, 
+             addDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+    import { getStorage, ref, uploadBytes, getDownloadURL } from 
+             'https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js';
+
+    // Firebase configuration من الكود القديم
+    const firebaseConfig = {
+        apiKey: "AIzaSyBAcPzPzIDYHvezf5klAwFzU0gmoo_AsCo",
+        authDomain: "fouad-academy.firebaseapp.com",
+        projectId: "fouad-academy",
+        storageBucket: "fouad-academy.firebasestorage.app",
+        messagingSenderId: "553738647199",
+        appId: "1:553738647199:web:4e73c59b115da5be15d4aa",
+        measurementId: "G-M0VML1SRZ4"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const storage = getStorage(app);
+    const googleProvider = new GoogleAuthProvider();
+
+    // Admin emails
+    const ADMIN_EMAILS = [
+        "coach.mahmoud.fouad@gmail.com",
+        "enneagram.compass@gmail.com", 
+        "mahmoudfouad25@gmail.com"
+    ];
+
+    // Firebase Auth Manager
+    class FirebaseAuthManager {
+        constructor() {
+            this.currentUser = null;
+            this.init();
+        }
+
+        init() {
+            // مراقبة حالة المصادقة
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    this.currentUser = user;
+                    await this.createUserDocument(user);
+                    this.updateUI();
+                } else {
+                    this.currentUser = null;
+                    this.updateUI();
+                }
+            });
+        }
+
+        // تسجيل دخول بالبريد الإلكتروني
+        async loginWithEmail(email, password) {
+            try {
+                const result = await signInWithEmailAndPassword(auth, email, password);
+                window.showNotification(`مرحباً بك، ${result.user.displayName || 'عزيزي المستخدم'}!`, 'success');
+                return { success: true, user: result.user };
+            } catch (error) {
+                const errorMessage = this.getFirebaseErrorMessage(error);
+                window.showNotification(errorMessage, 'error');
+                return { success: false, message: errorMessage };
+            }
+        }
+
+        // تسجيل دخول بـ Google
+        async loginWithGoogle() {
+            try {
+                const result = await signInWithPopup(auth, googleProvider);
+                const user = result.user;
+                await this.createUserDocument(user);
+                window.showNotification(`مرحباً بك، ${user.displayName}!`, 'success');
+                return { success: true, user: user };
+            } catch (error) {
+                const errorMessage = this.getFirebaseErrorMessage(error);
+                window.showNotification(errorMessage, 'error');
+                return { success: false, message: errorMessage };
+            }
+        }
+
+        // التسجيل بالبريد الإلكتروني
+        async registerWithEmail(name, email, password, confirmPassword) {
+            try {
+                if (password !== confirmPassword) {
+                    throw new Error('كلمة المرور وتأكيدها غير متطابقتين');
+                }
+
+                if (password.length < 6) {
+                    throw new Error('كلمة المرور يجب أن تكون 6 أحرف على الأقل');
+                }
+
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+
+                await updateProfile(user, { displayName: name });
+                await this.createUserDocument(user, name);
+
+                window.showNotification(`مرحباً بك في منصة الفؤاد! تم منحك دورة "ملاذ الحيارى" مجاناً`, 'success');
+                return { success: true, user: user };
+
+            } catch (error) {
+                const errorMessage = this.getFirebaseErrorMessage(error);
+                window.showNotification(errorMessage, 'error');
+                return { success: false, message: errorMessage };
+            }
+        }
+
+        // إنشاء مستند المستخدم
+        async createUserDocument(user, customName = null) {
+            const userRef = doc(db, 'users', user.uid);
+            const userDoc = await getDoc(userRef);
+
+            if (!userDoc.exists()) {
+                const userData = {
+                    uid: user.uid,
+                    name: customName || user.displayName || 'مستخدم جديد',
+                    email: user.email,
+                    joinDate: new Date().toISOString(),
+                    enrolledCourses: [1], // Give first course for free
+                    isAdmin: ADMIN_EMAILS.includes(user.email),
+                    lastActive: new Date().toISOString(),
+                    totalWatchTime: 0,
+                    completedCourses: []
+                };
+
+                await setDoc(userRef, userData);
+
+                // Create enrollment record for free course
+                await setDoc(doc(db, 'enrollments', `${user.uid}_1`), {
+                    userId: user.uid,
+                    courseId: 1,
+                    enrolledAt: new Date().toISOString(),
+                    progress: 0,
+                    completed: false,
+                    watchedVideos: []
+                });
+            } else {
+                await updateDoc(userRef, {
+                    lastActive: new Date().toISOString()
+                });
+            }
+        }
+
+        // تسجيل الخروج
+        async logout() {
+            try {
+                await signOut(auth);
+                window.showNotification('تم تسجيل الخروج بنجاح', 'info');
+                return { success: true };
+            } catch (error) {
+                console.error('Logout error:', error);
+                return { success: false };
+            }
+        }
+
+        // التحقق من الدور
+        async isAdmin() {
+            if (!this.currentUser) return false;
+            
+            const userDoc = await getDoc(doc(db, 'users', this.currentUser.uid));
+            return userDoc.exists() && userDoc.data().isAdmin;
+        }
+
+        // تحديث واجهة المستخدم
+        updateUI() {
+            if (window.updateNavigationState) {
+                window.updateNavigationState();
+            }
+        }
+
+        // رسائل الخطأ
+        getFirebaseErrorMessage(error) {
+            const errorMessages = {
+                'auth/user-not-found': 'المستخدم غير موجود',
+                'auth/wrong-password': 'كلمة المرور غير صحيحة',
+                'auth/email-already-in-use': 'البريد الإلكتروني مستخدم بالفعل',
+                'auth/weak-password': 'كلمة المرور ضعيفة',
+                'auth/invalid-email': 'البريد الإلكتروني غير صحيح',
+                'auth/too-many-requests': 'تم تجاوز عدد المحاولات المسموح. حاول لاحقاً',
+                'auth/network-request-failed': 'خطأ في الاتصال بالإنترنت',
+                'auth/popup-closed-by-user': 'تم إغلاق نافذة تسجيل الدخول'
+            };
+
+            return errorMessages[error.code] || 'حدث خطأ غير متوقع. حاول مرة أخرى';
+        }
+    }
+
+    // إنشاء مثيل من مدير المصادقة
+    const firebaseAuthManager = new FirebaseAuthManager();
+    
+    // ربط بالنطاق العام
+    window.firebaseAuth = firebaseAuthManager;
+    window.firebaseApp = app;
+    window.firebaseDb = db;
+
+    // تحديث وظائف تسجيل الدخول الموجودة
+    window.handleLogin = async function(event) {
+        event.preventDefault();
+        
+        const email = document.getElementById('loginEmail').value.trim();
+        const password = document.getElementById('loginPassword').value;
+        
+        const result = await firebaseAuthManager.loginWithEmail(email, password);
+        
+        if (result.success) {
+            window.closeAuthModal();
+            
+            // التحقق من دور الآدمن
+            const isAdmin = await firebaseAuthManager.isAdmin();
+            if (isAdmin) {
+                setTimeout(() => {
+                    window.location.href = 'admin/dashboard.html';
+                }, 1500);
+            }
+        }
+    };
+
+    window.handleRegister = async function(event) {
+        event.preventDefault();
+        
+        const name = document.getElementById('registerName').value.trim();
+        const email = document.getElementById('registerEmail').value.trim();
+        const password = document.getElementById('registerPassword').value;
+        const confirmPassword = document.getElementById('registerConfirmPassword').value;
+        
+        const result = await firebaseAuthManager.registerWithEmail(name, email, password, confirmPassword);
+        
+        if (result.success) {
+            window.closeAuthModal();
+        }
+    };
+
+    // تسجيل دخول Google
+    window.loginWithGoogle = async function() {
+        const result = await firebaseAuthManager.loginWithGoogle();
+        
+        if (result.success) {
+            window.closeAuthModal();
+            
+            // التحقق من دور الآدمن
+            const isAdmin = await firebaseAuthManager.isAdmin();
+            if (isAdmin) {
+                setTimeout(() => {
+                    window.location.href = 'admin/dashboard.html';
+                }, 1500);
+            }
+        }
+    };
+
+    window.logout = async function() {
+        const result = await firebaseAuthManager.logout();
+        if (result.success) {
+            window.location.reload();
+        }
+    };
+
+    // تحديث updateNavigationState
+    window.updateNavigationState = async function() {
+        const navAuth = document.querySelector('.nav-auth');
+        if (!navAuth) return;
+        
+        if (firebaseAuthManager.currentUser) {
+            const isAdmin = await firebaseAuthManager.isAdmin();
+            const userDisplayName = firebaseAuthManager.currentUser.displayName || 'المستخدم';
+            
+            navAuth.innerHTML = `
+                <div class="user-info">
+                    <span>مرحباً، ${userDisplayName}</span>
+                    <button class="btn btn-outline" onclick="goToDashboard()">
+                        ${isAdmin ? 'لوحة الإدارة' : 'لوحة التحكم'}
+                    </button>
+                    <button class="btn btn-primary" onclick="logout()">خروج</button>
+                </div>
+            `;
+        } else {
+            navAuth.innerHTML = `
+                <button class="btn btn-outline" onclick="showLogin()">تسجيل الدخول</button>
+                <button class="btn btn-primary" onclick="showRegister()">انضم الآن</button>
+            `;
+        }
+    };
+
+    // تحديث goToDashboard
+    window.goToDashboard = async function() {
+        if (!firebaseAuthManager.currentUser) {
+            window.showLogin();
+            return;
+        }
+        
+        const isAdmin = await firebaseAuthManager.isAdmin();
+        if (isAdmin) {
+            window.location.href = 'admin/dashboard.html';
+        } else {
+            window.showNotification('لوحة الطالب ستكون متاحة قريباً', 'info');
+        }
+    };
+
+    console.log('Firebase تم تحميله بنجاح ✅');
+</script>
+
+<!-- إضافة زر Google في نماذج المصادقة -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // إضافة زر Google لنموذج تسجيل الدخول
+    const loginForm = document.getElementById('loginForm');
+    if (loginForm) {
+        const googleBtn = document.createElement('button');
+        googleBtn.type = 'button';
+        googleBtn.className = 'btn btn-primary btn-full';
+        googleBtn.style.background = 'linear-gradient(45deg, #db4437, #c23321)';
+        googleBtn.style.marginTop = '15px';
+        googleBtn.innerHTML = '🌐 تسجيل الدخول بـ Google';
+        googleBtn.onclick = window.loginWithGoogle;
+        
+        loginForm.appendChild(googleBtn);
+    }
+
+    // إضافة زر Google لنموذج التسجيل
+    const registerForm = document.getElementById('registerForm');
+    if (registerForm) {
+        const googleBtn = document.createElement('button');
+        googleBtn.type = 'button';
+        googleBtn.className = 'btn btn-primary btn-full';
+        googleBtn.style.background = 'linear-gradient(45deg, #db4437, #c23321)';
+        googleBtn.style.marginTop = '15px';
+        googleBtn.innerHTML = '🌐 إنشاء حساب بـ Google';
+        googleBtn.onclick = window.loginWithGoogle;
+        
+        registerForm.appendChild(googleBtn);
+    }
+});
+</script>
