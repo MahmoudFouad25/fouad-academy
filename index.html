@@ -1,546 +1,8 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منصة الفؤاد التعليمية - الرئيسية</title>
-    <link rel="stylesheet" href="shared/css/main.css">
-</head>
-<body>
-    <!-- Loading Screen -->
-    <div id="loadingScreen" class="loading-overlay">
-        <div class="loading-spinner"></div>
-        <p>جاري تحميل منصة الفؤاد التعليمية...</p>
-    </div>
+<!-- أضف هذا الكود في نهاية ملف index.html قبل إغلاق </body> -->
 
-    <!-- Navigation Bar -->
-    <nav class="main-nav">
-        <div class="nav-container">
-            <div class="nav-brand">
-                <img src="shared/images/logo.png" alt="شعار المنصة" class="logo">
-                <h1>منصة الفؤاد التعليمية</h1>
-            </div>
-            
-            <div class="nav-menu">
-                <a href="#home" class="nav-link active">الرئيسية</a>
-                <a href="#courses" class="nav-link">الدورات</a>
-                <a href="#about" class="nav-link">من نحن</a>
-                <a href="#contact" class="nav-link">تواصل معنا</a>
-            </div>
-            
-            <div class="nav-auth">
-                <button class="btn btn-outline" onclick="showLogin()">تسجيل الدخول</button>
-                <button class="btn btn-primary" onclick="showRegister()">انضم الآن</button>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Hero Section -->
-    <section id="home" class="hero-section">
-        <div class="hero-container">
-            <div class="hero-content">
-                <h2 class="hero-title">استيقظ، اكتشف، انطلق</h2>
-                <p class="hero-subtitle">رحلة حقيقية للقلوب التعبانة... دليل عملي للي نفسهم يرجعوا لنفسهم بجد</p>
-                <div class="hero-buttons">
-                    <button class="btn btn-hero" onclick="showRegister()">ابدأ رحلتك التعليمية</button>
-                    <button class="btn btn-outline-light" onclick="scrollToSection('courses')">تصفح الدورات</button>
-                </div>
-            </div>
-            <div class="hero-image">
-                <div class="floating-elements">
-                    <span class="floating-icon">📚</span>
-                    <span class="floating-icon">🌟</span>
-                    <span class="floating-icon">🎯</span>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Courses Section -->
-    <section id="courses" class="courses-section">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">دوراتنا التدريبية</h2>
-                <p class="section-subtitle">اكتشف مجموعة متنوعة من الدورات المصممة لتطوير ذاتك ومهاراتك</p>
-            </div>
-            
-            <div class="courses-grid" id="coursesGrid">
-                <!-- الدورات ستُحمّل هنا ديناميكياً -->
-            </div>
-            
-            <div class="text-center">
-                <button class="btn btn-primary" onclick="showAllCourses()">عرض جميع الدورات</button>
-            </div>
-        </div>
-    </section>
-
-    <!-- About Section -->
-    <section id="about" class="about-section">
-        <div class="container">
-            <div class="about-grid">
-                <div class="about-content">
-                    <h2 class="section-title">عن الأستاذ محمود فؤاد</h2>
-                    <p class="about-text">
-                        خبير في التطوير الذاتي والنمو الشخصي، مؤسس منهج "ملاذ الحيارى" 
-                        ومطور برامج تدريبية متخصصة في إعادة اكتشاف الذات والتوازن النفسي.
-                    </p>
-                    <div class="about-stats">
-                        <div class="stat-item">
-                            <span class="stat-number" data-count="1000">0</span>
-                            <span class="stat-label">متدرب</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-number" data-count="50">0</span>
-                            <span class="stat-label">دورة تدريبية</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-number" data-count="5">0</span>
-                            <span class="stat-label">سنوات خبرة</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="about-image">
-                    <img src="shared/images/instructor.jpg" alt="الأستاذ محمود فؤاد" class="instructor-image">
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Contact Section -->
-    <section id="contact" class="contact-section">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">تواصل معنا</h2>
-                <p class="section-subtitle">نحن هنا لمساعدتك في رحلتك التعليمية</p>
-            </div>
-            
-            <div class="contact-grid">
-                <div class="contact-info">
-                    <div class="contact-item">
-                        <span class="contact-icon">📧</span>
-                        <div>
-                            <h3>البريد الإلكتروني</h3>
-                            <p>coach.mahmoud.fouad@gmail.com</p>
-                        </div>
-                    </div>
-                    <div class="contact-item">
-                        <span class="contact-icon">📱</span>
-                        <div>
-                            <h3>واتساب</h3>
-                            <p>للاستفسارات والدعم الفني</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="contact-form">
-                    <form id="contactForm">
-                        <div class="form-group">
-                            <input type="text" id="contactName" placeholder="الاسم الكامل" required>
-                        </div>
-                        <div class="form-group">
-                            <input type="email" id="contactEmail" placeholder="البريد الإلكتروني" required>
-                        </div>
-                        <div class="form-group">
-                            <textarea id="contactMessage" placeholder="رسالتك" rows="5" required></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-primary">إرسال الرسالة</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="main-footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h3>منصة الفؤاد التعليمية</h3>
-                    <p>منصة تعليمية متخصصة في التطوير الذاتي وإعادة اكتشاف الذات</p>
-                </div>
-                <div class="footer-section">
-                    <h3>روابط سريعة</h3>
-                    <ul>
-                        <li><a href="#home">الرئيسية</a></li>
-                        <li><a href="#courses">الدورات</a></li>
-                        <li><a href="#about">من نحن</a></li>
-                        <li><a href="#contact">تواصل معنا</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h3>تابعنا</h3>
-                    <div class="social-links">
-                        <a href="#" class="social-link">📘</a>
-                        <a href="#" class="social-link">📱</a>
-                        <a href="#" class="social-link">📧</a>
-                    </div>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2025 منصة الفؤاد التعليمية. جميع الحقوق محفوظة.</p>
-            </div>
-        </div>
-    </footer>
-
-    <!-- Auth Modals -->
-    <div id="authModal" class="modal">
-        <div class="modal-content">
-            <span class="modal-close" onclick="closeAuthModal()">&times;</span>
-            
-            <!-- Login Form -->
-            <div id="loginForm" class="auth-form">
-                <h2>تسجيل الدخول</h2>
-                <form id="loginFormElement">
-                    <div class="form-group">
-                        <input type="email" id="loginEmail" placeholder="البريد الإلكتروني" required>
-                    </div>
-                    <div class="form-group">
-                        <input type="password" id="loginPassword" placeholder="كلمة المرور" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary btn-full">دخول</button>
-                </form>
-                <p class="auth-switch">ليس لديك حساب؟ <a href="#" onclick="switchToRegister()">أنشئ حساباً جديداً</a></p>
-            </div>
-            
-            <!-- Register Form -->
-            <div id="registerForm" class="auth-form hidden">
-                <h2>إنشاء حساب جديد</h2>
-                <form id="registerFormElement">
-                    <div class="form-group">
-                        <input type="text" id="registerName" placeholder="الاسم الكامل" required>
-                    </div>
-                    <div class="form-group">
-                        <input type="email" id="registerEmail" placeholder="البريد الإلكتروني" required>
-                    </div>
-                    <div class="form-group">
-                        <input type="password" id="registerPassword" placeholder="كلمة المرور" required>
-                    </div>
-                    <div class="form-group">
-                        <input type="password" id="registerConfirmPassword" placeholder="تأكيد كلمة المرور" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary btn-full">إنشاء الحساب</button>
-                </form>
-                <p class="auth-switch">لديك حساب بالفعل؟ <a href="#" onclick="switchToLogin()">سجل دخولك</a></p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Scripts -->
-    <script src="shared/js/main.js"></script>
-    <script src="shared/js/auth.js"></script>
-
-    <!-- أضف هذا في نهاية ملف index.html قبل إغلاق </body> -->
-
-<!-- Firebase Configuration Script -->
+<!-- Firebase Configuration and Initialization -->
 <script type="module">
     // Import Firebase modules
-    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, 
-             signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged, updateProfile } from 
-             'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
-    import { getFirestore, doc, setDoc, getDoc, collection, getDocs, updateDoc, query, where, orderBy, 
-             addDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
-    import { getStorage, ref, uploadBytes, getDownloadURL } from 
-             'https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js';
-
-    // Firebase configuration من الكود القديم
-    const firebaseConfig = {
-        apiKey: "AIzaSyBAcPzPzIDYHvezf5klAwFzU0gmoo_AsCo",
-        authDomain: "fouad-academy.firebaseapp.com",
-        projectId: "fouad-academy",
-        storageBucket: "fouad-academy.firebasestorage.app",
-        messagingSenderId: "553738647199",
-        appId: "1:553738647199:web:4e73c59b115da5be15d4aa",
-        measurementId: "G-M0VML1SRZ4"
-    };
-
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-    const storage = getStorage(app);
-    const googleProvider = new GoogleAuthProvider();
-
-    // Admin emails
-    const ADMIN_EMAILS = [
-        "coach.mahmoud.fouad@gmail.com",
-        "enneagram.compass@gmail.com", 
-        "mahmoudfouad25@gmail.com"
-    ];
-
-    // Firebase Auth Manager
-    class FirebaseAuthManager {
-        constructor() {
-            this.currentUser = null;
-            this.init();
-        }
-
-        init() {
-            // مراقبة حالة المصادقة
-            onAuthStateChanged(auth, async (user) => {
-                if (user) {
-                    this.currentUser = user;
-                    await this.createUserDocument(user);
-                    this.updateUI();
-                } else {
-                    this.currentUser = null;
-                    this.updateUI();
-                }
-            });
-        }
-
-        // تسجيل دخول بالبريد الإلكتروني
-        async loginWithEmail(email, password) {
-            try {
-                const result = await signInWithEmailAndPassword(auth, email, password);
-                window.showNotification(`مرحباً بك، ${result.user.displayName || 'عزيزي المستخدم'}!`, 'success');
-                return { success: true, user: result.user };
-            } catch (error) {
-                const errorMessage = this.getFirebaseErrorMessage(error);
-                window.showNotification(errorMessage, 'error');
-                return { success: false, message: errorMessage };
-            }
-        }
-
-        // تسجيل دخول بـ Google
-        async loginWithGoogle() {
-            try {
-                const result = await signInWithPopup(auth, googleProvider);
-                const user = result.user;
-                await this.createUserDocument(user);
-                window.showNotification(`مرحباً بك، ${user.displayName}!`, 'success');
-                return { success: true, user: user };
-            } catch (error) {
-                const errorMessage = this.getFirebaseErrorMessage(error);
-                window.showNotification(errorMessage, 'error');
-                return { success: false, message: errorMessage };
-            }
-        }
-
-        // التسجيل بالبريد الإلكتروني
-        async registerWithEmail(name, email, password, confirmPassword) {
-            try {
-                if (password !== confirmPassword) {
-                    throw new Error('كلمة المرور وتأكيدها غير متطابقتين');
-                }
-
-                if (password.length < 6) {
-                    throw new Error('كلمة المرور يجب أن تكون 6 أحرف على الأقل');
-                }
-
-                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                const user = userCredential.user;
-
-                await updateProfile(user, { displayName: name });
-                await this.createUserDocument(user, name);
-
-                window.showNotification(`مرحباً بك في منصة الفؤاد! تم منحك دورة "ملاذ الحيارى" مجاناً`, 'success');
-                return { success: true, user: user };
-
-            } catch (error) {
-                const errorMessage = this.getFirebaseErrorMessage(error);
-                window.showNotification(errorMessage, 'error');
-                return { success: false, message: errorMessage };
-            }
-        }
-
-        // إنشاء مستند المستخدم
-        async createUserDocument(user, customName = null) {
-            const userRef = doc(db, 'users', user.uid);
-            const userDoc = await getDoc(userRef);
-
-            if (!userDoc.exists()) {
-                const userData = {
-                    uid: user.uid,
-                    name: customName || user.displayName || 'مستخدم جديد',
-                    email: user.email,
-                    joinDate: new Date().toISOString(),
-                    enrolledCourses: [1], // Give first course for free
-                    isAdmin: ADMIN_EMAILS.includes(user.email),
-                    lastActive: new Date().toISOString(),
-                    totalWatchTime: 0,
-                    completedCourses: []
-                };
-
-                await setDoc(userRef, userData);
-
-                // Create enrollment record for free course
-                await setDoc(doc(db, 'enrollments', `${user.uid}_1`), {
-                    userId: user.uid,
-                    courseId: 1,
-                    enrolledAt: new Date().toISOString(),
-                    progress: 0,
-                    completed: false,
-                    watchedVideos: []
-                });
-            } else {
-                await updateDoc(userRef, {
-                    lastActive: new Date().toISOString()
-                });
-            }
-        }
-
-        // تسجيل الخروج
-        async logout() {
-            try {
-                await signOut(auth);
-                window.showNotification('تم تسجيل الخروج بنجاح', 'info');
-                return { success: true };
-            } catch (error) {
-                console.error('Logout error:', error);
-                return { success: false };
-            }
-        }
-
-        // التحقق من الدور
-        async isAdmin() {
-            if (!this.currentUser) return false;
-            
-            const userDoc = await getDoc(doc(db, 'users', this.currentUser.uid));
-            return userDoc.exists() && userDoc.data().isAdmin;
-        }
-
-        // تحديث واجهة المستخدم
-        updateUI() {
-            if (window.updateNavigationState) {
-                window.updateNavigationState();
-            }
-        }
-
-        // رسائل الخطأ
-        getFirebaseErrorMessage(error) {
-            const errorMessages = {
-                'auth/user-not-found': 'المستخدم غير موجود',
-                'auth/wrong-password': 'كلمة المرور غير صحيحة',
-                'auth/email-already-in-use': 'البريد الإلكتروني مستخدم بالفعل',
-                'auth/weak-password': 'كلمة المرور ضعيفة',
-                'auth/invalid-email': 'البريد الإلكتروني غير صحيح',
-                'auth/too-many-requests': 'تم تجاوز عدد المحاولات المسموح. حاول لاحقاً',
-                'auth/network-request-failed': 'خطأ في الاتصال بالإنترنت',
-                'auth/popup-closed-by-user': 'تم إغلاق نافذة تسجيل الدخول'
-            };
-
-            return errorMessages[error.code] || 'حدث خطأ غير متوقع. حاول مرة أخرى';
-        }
-    }
-
-    // إنشاء مثيل من مدير المصادقة
-    const firebaseAuthManager = new FirebaseAuthManager();
-    
-    // ربط بالنطاق العام
-    window.firebaseAuth = firebaseAuthManager;
-    window.firebaseApp = app;
-    window.firebaseDb = db;
-
-    // تحديث وظائف تسجيل الدخول الموجودة
-    window.handleLogin = async function(event) {
-        event.preventDefault();
-        
-        const email = document.getElementById('loginEmail').value.trim();
-        const password = document.getElementById('loginPassword').value;
-        
-        const result = await firebaseAuthManager.loginWithEmail(email, password);
-        
-        if (result.success) {
-            window.closeAuthModal();
-            
-            // التحقق من دور الآدمن
-            const isAdmin = await firebaseAuthManager.isAdmin();
-            if (isAdmin) {
-                setTimeout(() => {
-                    window.location.href = 'admin/dashboard.html';
-                }, 1500);
-            }
-        }
-    };
-
-    window.handleRegister = async function(event) {
-        event.preventDefault();
-        
-        const name = document.getElementById('registerName').value.trim();
-        const email = document.getElementById('registerEmail').value.trim();
-        const password = document.getElementById('registerPassword').value;
-        const confirmPassword = document.getElementById('registerConfirmPassword').value;
-        
-        const result = await firebaseAuthManager.registerWithEmail(name, email, password, confirmPassword);
-        
-        if (result.success) {
-            window.closeAuthModal();
-        }
-    };
-
-    // تسجيل دخول Google
-    window.loginWithGoogle = async function() {
-        const result = await firebaseAuthManager.loginWithGoogle();
-        
-        if (result.success) {
-            window.closeAuthModal();
-            
-            // التحقق من دور الآدمن
-            const isAdmin = await firebaseAuthManager.isAdmin();
-            if (isAdmin) {
-                setTimeout(() => {
-                    window.location.href = 'admin/dashboard.html';
-                }, 1500);
-            }
-        }
-    };
-
-    window.logout = async function() {
-        const result = await firebaseAuthManager.logout();
-        if (result.success) {
-            window.location.reload();
-        }
-    };
-
-    // تحديث updateNavigationState
-    window.updateNavigationState = async function() {
-        const navAuth = document.querySelector('.nav-auth');
-        if (!navAuth) return;
-        
-        if (firebaseAuthManager.currentUser) {
-            const isAdmin = await firebaseAuthManager.isAdmin();
-            const userDisplayName = firebaseAuthManager.currentUser.displayName || 'المستخدم';
-            
-            navAuth.innerHTML = `
-                <div class="user-info">
-                    <span>مرحباً، ${userDisplayName}</span>
-                    <button class="btn btn-outline" onclick="goToDashboard()">
-                        ${isAdmin ? 'لوحة الإدارة' : 'لوحة التحكم'}
-                    </button>
-                    <button class="btn btn-primary" onclick="logout()">خروج</button>
-                </div>
-            `;
-        } else {
-            navAuth.innerHTML = `
-                <button class="btn btn-outline" onclick="showLogin()">تسجيل الدخول</button>
-                <button class="btn btn-primary" onclick="showRegister()">انضم الآن</button>
-            `;
-        }
-    };
-
-    // تحديث goToDashboard
-    window.goToDashboard = async function() {
-        if (!firebaseAuthManager.currentUser) {
-            window.showLogin();
-            return;
-        }
-        
-        const isAdmin = await firebaseAuthManager.isAdmin();
-        if (isAdmin) {
-            window.location.href = 'admin/dashboard.html';
-        } else {
-            window.showNotification('لوحة الطالب ستكون متاحة قريباً', 'info');
-        }
-    };
-
-    console.log('Firebase تم تحميله بنجاح ✅');
-</script>
-
-<!-- أضف هذا الكود في نهاية ملف index.html (بدل الكود الموجود) -->
-
-<!-- Firebase Real Authentication -->
-<script type="module">
-    // Import Firebase modules  
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
     import { 
         getAuth, 
@@ -557,10 +19,23 @@
         doc, 
         setDoc, 
         getDoc, 
-        updateDoc 
+        updateDoc,
+        collection,
+        getDocs,
+        query,
+        where,
+        orderBy,
+        addDoc,
+        deleteDoc
     } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+    import { 
+        getStorage, 
+        ref, 
+        uploadBytes, 
+        getDownloadURL 
+    } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js';
 
-    // Firebase configuration (من الكود القديم)
+    // Firebase configuration
     const firebaseConfig = {
         apiKey: "AIzaSyBAcPzPzIDYHvezf5klAwFzU0gmoo_AsCo",
         authDomain: "fouad-academy.firebaseapp.com",
@@ -572,490 +47,152 @@
     };
 
     // Initialize Firebase
-    let app, auth, db, googleProvider;
+    let app, auth, db, storage;
     
     try {
         app = initializeApp(firebaseConfig);
         auth = getAuth(app);
         db = getFirestore(app);
-        googleProvider = new GoogleAuthProvider();
+        storage = getStorage(app);
         
-        // إعداد Google Provider
-        googleProvider.addScope('email');
-        googleProvider.addScope('profile');
+        // تصدير Firebase للنطاق العام
+        window.firebaseApp = app;
+        window.firebaseAuth = auth;
+        window.firebaseDb = db;
+        window.firebaseStorage = storage;
         
-        console.log('✅ Firebase تم تحميله بنجاح!');
+        // تصدير الوظائف للاستخدام في auth.js
+        window.firebaseAuthFunctions = {
+            signInWithPopup,
+            GoogleAuthProvider,
+            signOut,
+            onAuthStateChanged,
+            signInWithEmailAndPassword,
+            createUserWithEmailAndPassword,
+            updateProfile
+        };
+        
+        window.firebaseFirestoreFunctions = {
+            doc,
+            setDoc,
+            getDoc,
+            updateDoc,
+            collection,
+            getDocs,
+            query,
+            where,
+            orderBy,
+            addDoc,
+            deleteDoc
+        };
+        
+        window.firebaseStorageFunctions = {
+            ref,
+            uploadBytes,
+            getDownloadURL
+        };
+        
+        console.log('🔥 Firebase تم تحميله وتهيئته بنجاح!');
+        
+        // إشعار المستخدم بنجاح التحميل
+        setTimeout(() => {
+            const indicator = document.createElement('div');
+            indicator.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                left: 20px;
+                background: #10b981;
+                color: white;
+                padding: 0.5rem 1rem;
+                border-radius: 8px;
+                font-size: 0.8rem;
+                z-index: 9999;
+                animation: fadeInOut 3s ease;
+            `;
+            indicator.textContent = '🔥 Firebase متصل';
+            
+            const fadeAnimation = document.createElement('style');
+            fadeAnimation.textContent = `
+                @keyframes fadeInOut {
+                    0%, 100% { opacity: 0; }
+                    20%, 80% { opacity: 1; }
+                }
+            `;
+            document.head.appendChild(fadeAnimation);
+            document.body.appendChild(indicator);
+            
+            setTimeout(() => indicator.remove(), 3000);
+        }, 1000);
+        
     } catch (error) {
         console.error('❌ خطأ في تحميل Firebase:', error);
-        console.log('🔄 سيتم استخدام النظام المحلي...');
-    }
-
-    // Admin emails
-    const ADMIN_EMAILS = [
-        "coach.mahmoud.fouad@gmail.com",
-        "enneagram.compass@gmail.com", 
-        "mahmoudfouad25@gmail.com"
-    ];
-
-    // Real Firebase Auth Manager
-    class RealFirebaseAuth {
-        constructor() {
-            this.currentUser = null;
-            this.isFirebaseReady = !!auth;
-            this.init();
-        }
-
-        init() {
-            if (this.isFirebaseReady) {
-                console.log('🔥 تهيئة Firebase الحقيقي...');
-                
-                // مراقبة حالة المصادقة
-                onAuthStateChanged(auth, async (user) => {
-                    console.log('🔄 تغيير حالة المصادقة:', user ? user.email : 'غير مسجل');
-                    
-                    if (user) {
-                        await this.handleUserSignIn(user);
-                    } else {
-                        this.handleUserSignOut();
-                    }
-                });
-            } else {
-                console.log('⚠️ Firebase غير متاح - استخدام النظام المحلي');
-                this.useFallbackAuth();
-            }
-        }
-
-        // معالجة تسجيل دخول المستخدم
-        async handleUserSignIn(user) {
-            try {
-                // إنشاء أو تحديث مستند المستخدم
-                await this.createOrUpdateUserDoc(user);
-                
-                // تحديث المستخدم الحالي
-                const userDoc = await getDoc(doc(db, 'users', user.uid));
-                const userData = userDoc.data();
-                
-                this.currentUser = {
-                    id: user.uid,
-                    name: user.displayName || userData?.name || 'مستخدم',
-                    email: user.email,
-                    avatar: user.photoURL,
-                    role: userData?.isAdmin ? 'admin' : 'student',
-                    provider: user.providerData[0]?.providerId || 'email',
-                    enrolledCourses: userData?.enrolledCourses || [1]
-                };
-
-                console.log('✅ تم تسجيل الدخول:', this.currentUser.name);
-                
-                this.updateUI();
-                this.showNotification(`مرحباً بك، ${this.currentUser.name}!`, 'success');
-
-                // إغلاق نافذة المصادقة إذا كانت مفتوحة
-                this.closeAuthModal();
-
-                // انتقال للآدمن إذا لزم الأمر
-                if (this.currentUser.role === 'admin') {
-                    setTimeout(() => {
-                        if (window.location.pathname === '/' || window.location.pathname.includes('index.html')) {
-                            window.location.href = 'admin/dashboard.html';
-                        }
-                    }, 1500);
-                }
-
-            } catch (error) {
-                console.error('خطأ في معالجة تسجيل الدخول:', error);
-                this.showNotification('حدث خطأ في تسجيل الدخول', 'error');
-            }
-        }
-
-        // معالجة تسجيل الخروج
-        handleUserSignOut() {
-            this.currentUser = null;
-            this.updateUI();
-            console.log('👋 تم تسجيل الخروج');
-        }
-
-        // إنشاء أو تحديث مستند المستخدم
-        async createOrUpdateUserDoc(user) {
-            const userRef = doc(db, 'users', user.uid);
-            const userDoc = await getDoc(userRef);
-
-            const userData = {
-                uid: user.uid,
-                name: user.displayName || 'مستخدم جديد',
-                email: user.email,
-                avatar: user.photoURL || null,
-                lastLogin: new Date().toISOString(),
-                isAdmin: ADMIN_EMAILS.includes(user.email.toLowerCase())
-            };
-
-            if (!userDoc.exists()) {
-                // مستخدم جديد
-                userData.joinDate = new Date().toISOString();
-                userData.enrolledCourses = [1]; // دورة مجانية
-                userData.completedCourses = [];
-                userData.totalWatchTime = 0;
-                
-                await setDoc(userRef, userData);
-                
-                // إنشاء سجل اشتراك في الدورة المجانية
-                await setDoc(doc(db, 'enrollments', `${user.uid}_1`), {
-                    userId: user.uid,
-                    courseId: 1,
-                    enrolledAt: new Date().toISOString(),
-                    progress: 0,
-                    completed: false,
-                    watchedVideos: []
-                });
-                
-                console.log('👤 تم إنشاء مستخدم جديد');
-            } else {
-                // تحديث المستخدم الموجود
-                await updateDoc(userRef, {
-                    lastLogin: userData.lastLogin,
-                    avatar: userData.avatar
-                });
-                
-                console.log('🔄 تم تحديث بيانات المستخدم');
-            }
-        }
-
-        // تسجيل دخول Google الحقيقي
-        async realGoogleLogin() {
-            if (!this.isFirebaseReady) {
-                this.showNotification('خدمة Google غير متاحة حالياً', 'error');
-                return;
-            }
-
-            try {
-                console.log('🌐 بدء تسجيل دخول Google الحقيقي...');
-                this.showNotification('جاري فتح نافذة Google...', 'info');
-
-                // فتح نافذة Google الحقيقية
-                const result = await signInWithPopup(auth, googleProvider);
-                const user = result.user;
-                
-                console.log('✅ تم تسجيل الدخول بـ Google بنجاح:', user.email);
-                
-                // Firebase سيتولى باقي العملية عبر onAuthStateChanged
-
-            } catch (error) {
-                console.error('❌ خطأ في تسجيل دخول Google:', error);
-                
-                if (error.code === 'auth/popup-closed-by-user') {
-                    this.showNotification('تم إغلاق نافذة Google', 'warning');
-                } else if (error.code === 'auth/popup-blocked') {
-                    this.showNotification('تم حظر النافذة المنبثقة. يرجى السماح بالنوافذ المنبثقة', 'error');
-                } else {
-                    this.showNotification('حدث خطأ في تسجيل الدخول بـ Google', 'error');
-                }
-            }
-        }
-
-        // تسجيل دخول بالبريد الإلكتروني
-        async emailLogin(email, password) {
-            if (!this.isFirebaseReady) {
-                return this.fallbackEmailLogin(email, password);
-            }
-
-            try {
-                console.log('📧 تسجيل دخول بالبريد الإلكتروني:', email);
-                
-                const result = await signInWithEmailAndPassword(auth, email, password);
-                console.log('✅ تم تسجيل الدخول بالبريد الإلكتروني');
-                
-                // Firebase سيتولى باقي العملية
-
-            } catch (error) {
-                console.error('❌ خطأ في تسجيل الدخول:', error);
-                
-                const errorMessages = {
-                    'auth/user-not-found': 'البريد الإلكتروني غير مسجل',
-                    'auth/wrong-password': 'كلمة المرور غير صحيحة',
-                    'auth/invalid-email': 'البريد الإلكتروني غير صحيح',
-                    'auth/too-many-requests': 'تم تجاوز عدد المحاولات. حاول لاحقاً'
-                };
-
-                const errorMessage = errorMessages[error.code] || 'حدث خطأ في تسجيل الدخول';
-                this.showNotification(errorMessage, 'error');
-                throw error;
-            }
-        }
-
-        // التسجيل بالبريد الإلكتروني
-        async emailRegister(name, email, password) {
-            if (!this.isFirebaseReady) {
-                return this.fallbackEmailRegister(name, email, password);
-            }
-
-            try {
-                console.log('📝 إنشاء حساب جديد:', email);
-                
-                const result = await createUserWithEmailAndPassword(auth, email, password);
-                const user = result.user;
-
-                // تحديث الاسم
-                await updateProfile(user, { displayName: name });
-                
-                console.log('✅ تم إنشاء الحساب بنجاح');
-                
-                // Firebase سيتولى باقي العملية
-
-            } catch (error) {
-                console.error('❌ خطأ في إنشاء الحساب:', error);
-                
-                const errorMessages = {
-                    'auth/email-already-in-use': 'البريد الإلكتروني مستخدم بالفعل',
-                    'auth/weak-password': 'كلمة المرور ضعيفة',
-                    'auth/invalid-email': 'البريد الإلكتروني غير صحيح'
-                };
-
-                const errorMessage = errorMessages[error.code] || 'حدث خطأ في إنشاء الحساب';
-                this.showNotification(errorMessage, 'error');
-                throw error;
-            }
-        }
-
-        // تسجيل الخروج الحقيقي
-        async realLogout() {
-            if (!this.isFirebaseReady) {
-                this.currentUser = null;
-                this.updateUI();
-                this.showNotification('تم تسجيل الخروج', 'info');
-                return;
-            }
-
-            try {
-                await signOut(auth);
-                this.showNotification('تم تسجيل الخروج بنجاح', 'success');
-                
-                // العودة للصفحة الرئيسية إذا كان في صفحة إدارية
-                if (window.location.pathname.includes('admin/')) {
-                    window.location.href = '../index.html';
-                }
-                
-            } catch (error) {
-                console.error('خطأ في تسجيل الخروج:', error);
-                this.showNotification('حدث خطأ في تسجيل الخروج', 'error');
-            }
-        }
-
-        // النظام الاحتياطي (نفس النظام السابق)
-        useFallbackAuth() {
-            if (window.authManager) {
-                this.currentUser = window.authManager.getCurrentUser();
-                this.updateUI();
-            }
-        }
-
-        fallbackEmailLogin(email, password) {
-            if (window.authManager) {
-                return window.authManager.handleLogin();
-            }
-        }
-
-        fallbackEmailRegister(name, email, password) {
-            if (window.authManager) {
-                return window.authManager.handleRegister();
-            }
-        }
-
-        // باقي الوظائف المساعدة
-        updateUI() {
-            const navAuth = document.querySelector('.nav-auth');
-            if (!navAuth) return;
-
-            if (this.currentUser) {
-                navAuth.innerHTML = `
-                    <div class="user-info" style="display: flex; align-items: center; gap: 1rem;">
-                        ${this.currentUser.avatar ? 
-                            `<img src="${this.currentUser.avatar}" alt="صورة المستخدم" style="width: 32px; height: 32px; border-radius: 50%;">` : 
-                            '<div style="width: 32px; height: 32px; background: #3b82f6; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 0.8rem;">' + this.currentUser.name.charAt(0) + '</div>'
-                        }
-                        <span>مرحباً، ${this.currentUser.name}</span>
-                        <button class="btn btn-outline" onclick="realAuth.goToDashboard()">
-                            ${this.currentUser.role === 'admin' ? 'لوحة الإدارة' : 'لوحتي'}
-                        </button>
-                        <button class="btn btn-primary" onclick="realAuth.realLogout()">خروج</button>
-                    </div>
-                `;
-            } else {
-                navAuth.innerHTML = `
-                    <button class="btn btn-outline" onclick="realAuth.showLogin()">تسجيل الدخول</button>
-                    <button class="btn btn-primary" onclick="realAuth.showRegister()">انضم الآن</button>
-                `;
-            }
-        }
-
-        showLogin() {
-            if (window.authManager) {
-                window.authManager.showLogin();
-                // إضافة زر Google الحقيقي
-                setTimeout(() => this.addRealGoogleButton(), 200);
-            }
-        }
-
-        showRegister() {
-            if (window.authManager) {
-                window.authManager.showRegister();
-                // إضافة زر Google الحقيقي
-                setTimeout(() => this.addRealGoogleButton(), 200);
-            }
-        }
-
-        closeAuthModal() {
-            if (window.authManager) {
-                window.authManager.closeAuthModal();
-            }
-        }
-
-        goToDashboard() {
-            if (!this.currentUser) {
-                this.showLogin();
-                return;
-            }
+        
+        // إشعار بفشل Firebase
+        setTimeout(() => {
+            const errorIndicator = document.createElement('div');
+            errorIndicator.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                left: 20px;
+                background: #ef4444;
+                color: white;
+                padding: 0.5rem 1rem;
+                border-radius: 8px;
+                font-size: 0.8rem;
+                z-index: 9999;
+            `;
+            errorIndicator.textContent = '⚠️ Firebase غير متصل';
+            document.body.appendChild(errorIndicator);
             
-            if (this.currentUser.role === 'admin') {
-                window.location.href = 'admin/dashboard.html';
-            } else {
-                this.showNotification('لوحة الطالب ستكون متاحة قريباً', 'info');
-            }
-        }
-
-        // إضافة زر Google الحقيقي
-        addRealGoogleButton() {
-            // إزالة الأزرار القديمة أولاً
-            document.querySelectorAll('.google-btn, .real-google-btn').forEach(btn => btn.remove());
-
-            const forms = ['loginForm', 'registerForm'];
-            
-            forms.forEach(formId => {
-                const form = document.getElementById(formId);
-                if (form) {
-                    const realGoogleBtn = document.createElement('button');
-                    realGoogleBtn.type = 'button';
-                    realGoogleBtn.className = 'btn btn-primary btn-full real-google-btn';
-                    realGoogleBtn.innerHTML = `
-                        <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
-                            <svg width="18" height="18" viewBox="0 0 24 24">
-                                <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                                <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                                <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                                <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-                            </svg>
-                            ${formId === 'loginForm' ? 'تسجيل الدخول بـ Google' : 'إنشاء حساب بـ Google'}
-                        </div>
-                    `;
-                    realGoogleBtn.style.cssText = `
-                        background: #fff !important;
-                        color: #333 !important;
-                        border: 1px solid #ddd !important;
-                        margin-top: 15px;
-                        font-weight: 500;
-                        transition: all 0.3s ease;
-                    `;
-                    
-                    realGoogleBtn.addEventListener('mouseenter', () => {
-                        realGoogleBtn.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
-                        realGoogleBtn.style.transform = 'translateY(-1px)';
-                    });
-                    
-                    realGoogleBtn.addEventListener('mouseleave', () => {
-                        realGoogleBtn.style.boxShadow = 'none';
-                        realGoogleBtn.style.transform = 'translateY(0)';
-                    });
-
-                    realGoogleBtn.onclick = () => this.realGoogleLogin();
-                    form.appendChild(realGoogleBtn);
-                }
-            });
-        }
-
-        showNotification(message, type = 'info') {
-            if (window.authManager && window.authManager.showNotification) {
-                window.authManager.showNotification(message, type);
-            } else {
-                console.log(`${type.toUpperCase()}: ${message}`);
-            }
-        }
-
-        getCurrentUser() {
-            return this.currentUser;
-        }
-
-        hasRole(role) {
-            return this.currentUser && this.currentUser.role === role;
-        }
+            setTimeout(() => errorIndicator.remove(), 5000);
+        }, 1000);
     }
-
-    // إنشاء مثيل من النظام الحقيقي
-    const realAuth = new RealFirebaseAuth();
-
-    // ربط بالنطاق العام
-    window.realAuth = realAuth;
-    window.firebaseApp = app;
-    window.firebaseAuth = auth;
-    window.firebaseDb = db;
-
-    // تحديث الوظائف العامة لتستخدم النظام الحقيقي
-    window.loginWithGoogle = () => realAuth.realGoogleLogin();
-    window.logout = () => realAuth.realLogout();
-    window.updateNavigationState = () => realAuth.updateUI();
-    window.goToDashboard = () => realAuth.goToDashboard();
-
-    // تحديث نماذج المصادقة للاستخدام النظام الحقيقي
-    window.handleLogin = async function(event) {
-        if (event) event.preventDefault();
-        
-        const email = document.getElementById('loginEmail').value.trim();
-        const password = document.getElementById('loginPassword').value;
-        
-        if (!email || !password) {
-            realAuth.showNotification('يرجى ملء جميع الحقول', 'error');
-            return;
-        }
-
-        try {
-            await realAuth.emailLogin(email, password);
-        } catch (error) {
-            // الخطأ تم التعامل معه في الدالة
-        }
-    };
-
-    window.handleRegister = async function(event) {
-        if (event) event.preventDefault();
-        
-        const name = document.getElementById('registerName').value.trim();
-        const email = document.getElementById('registerEmail').value.trim();
-        const password = document.getElementById('registerPassword').value;
-        const confirmPassword = document.getElementById('registerConfirmPassword').value;
-        
-        if (!name || !email || !password || !confirmPassword) {
-            realAuth.showNotification('يرجى ملء جميع الحقول', 'error');
-            return;
-        }
-
-        if (password !== confirmPassword) {
-            realAuth.showNotification('كلمة المرور وتأكيدها غير متطابقتين', 'error');
-            return;
-        }
-
-        if (password.length < 6) {
-            realAuth.showNotification('كلمة المرور يجب أن تكون 6 أحرف على الأقل', 'error');
-            return;
-        }
-
-        try {
-            await realAuth.emailRegister(name, email, password);
-        } catch (error) {
-            // الخطأ تم التعامل معه في الدالة
-        }
-    };
-
-    console.log('🔥 Firebase الحقيقي تم تحميله بنجاح!');
+    
+    // مراقبة حالة الاتصال
+    window.addEventListener('online', () => {
+        console.log('🌐 تم استعادة الاتصال بالإنترنت');
+    });
+    
+    window.addEventListener('offline', () => {
+        console.log('📡 فقدان الاتصال بالإنترنت');
+    });
 
 </script>
-</body>
-</html>
 
+<!-- تحميل ملفات JavaScript بالترتيب الصحيح -->
+<script src="shared/js/main.js"></script>
+<script src="shared/js/auth.js"></script>
 
+<!-- إضافة معالج لضمان تحميل auth.js بعد Firebase -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // التأكد من تحميل Firebase قبل تشغيل auth.js
+    function checkFirebaseReady() {
+        if (window.firebaseApp && window.firebaseAuth && window.firebaseDb) {
+            console.log('✅ Firebase جاهز - تشغيل نظام المصادقة');
+            
+            // إعادة تهيئة نظام المصادقة إذا لزم الأمر
+            if (window.fouadAuth && typeof window.fouadAuth.init === 'function') {
+                // النظام محمل بالفعل
+                console.log('🔄 نظام المصادقة محمل ومجهز');
+            }
+        } else {
+            console.log('⏳ انتظار تحميل Firebase...');
+            setTimeout(checkFirebaseReady, 100);
+        }
+    }
+    
+    // بدء فحص Firebase
+    setTimeout(checkFirebaseReady, 500);
+    
+    // إضافة معالج للأخطاء العامة
+    window.addEventListener('error', function(event) {
+        console.error('خطأ في التطبيق:', event.error);
+    });
+    
+    // معالج للوعود المرفوضة
+    window.addEventListener('unhandledrejection', function(event) {
+        console.error('وعد مرفوض:', event.reason);
+    });
+});
+</script>
