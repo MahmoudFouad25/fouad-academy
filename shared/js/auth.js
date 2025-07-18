@@ -1,5 +1,4 @@
-// منصة الفؤاد التعليمية - نظام المصادقة الكامل
-// shared/js/auth.js
+// استبدل محتوى ملف shared/js/auth.js بهذا الكود المُصحح
 
 class FouadAcademyAuth {
     constructor() {
@@ -16,44 +15,62 @@ class FouadAcademyAuth {
             "mahmoudfouad25@gmail.com"
         ];
         
-        this.init();
+        this.initializeFirebase();
     }
 
-    // تهيئة النظام
-    async init() {
-        console.log('🔧 تهيئة نظام المصادقة...');
-        
-        try {
-            await this.initializeFirebase();
-            this.setupAuthListener();
-            this.bindEvents();
-            this.loadLocalSession();
-            this.updateUI();
-            
-            console.log('✅ تم تحميل نظام المصادقة بنجاح');
-        } catch (error) {
-            console.error('❌ خطأ في تهيئة المصادقة:', error);
-            this.setupFallbackAuth();
-        }
-    }
-
-    // تهيئة Firebase
+    // تهيئة Firebase مع تأخير للتأكد من التحميل
     async initializeFirebase() {
-        if (window.firebaseApp && window.firebaseAuth && window.firebaseDb) {
-            // Firebase محمل بالفعل من index.html
-            this.auth = window.firebaseAuth;
-            this.db = window.firebaseDb;
-            this.isFirebaseReady = true;
+        console.log('🔧 بدء تهيئة Firebase...');
+        
+        // انتظار تحميل Firebase
+        let attempts = 0;
+        const maxAttempts = 20;
+        
+        const checkFirebase = () => {
+            attempts++;
+            console.log(`محاولة ${attempts}: فحص Firebase...`);
             
-            // إعداد Google Provider
-            const { GoogleAuthProvider } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js');
-            this.googleProvider = new GoogleAuthProvider();
-            this.googleProvider.addScope('email');
-            this.googleProvider.addScope('profile');
-            
-            console.log('✅ Firebase جاهز للاستخدام');
-        } else {
-            throw new Error('Firebase غير متاح');
+            if (window.firebaseApp && window.firebaseAuth && window.firebaseDb) {
+                this.auth = window.firebaseAuth;
+                this.db = window.firebaseDb;
+                this.isFirebaseReady = true;
+                
+                this.setupGoogleProvider();
+                this.setupAuthListener();
+                this.bindEvents();
+                this.updateUI();
+                
+                console.log('✅ Firebase تم تحميله بنجاح!');
+                this.showNotification('🔥 Firebase متصل', 'success');
+                
+            } else if (attempts < maxAttempts) {
+                console.log('⏳ انتظار Firebase...');
+                setTimeout(checkFirebase, 500);
+            } else {
+                console.error('❌ فشل في تحميل Firebase');
+                this.showNotification('⚠️ خدمة Google غير متاحة', 'error');
+                this.setupFallbackAuth();
+            }
+        };
+        
+        // بدء الفحص بعد ثانية
+        setTimeout(checkFirebase, 1000);
+    }
+
+    // إعداد Google Provider
+    setupGoogleProvider() {
+        try {
+            // استخدام GoogleAuthProvider من النطاق العام
+            if (window.firebaseAuthFunctions && window.firebaseAuthFunctions.GoogleAuthProvider) {
+                this.googleProvider = new window.firebaseAuthFunctions.GoogleAuthProvider();
+                this.googleProvider.addScope('email');
+                this.googleProvider.addScope('profile');
+                console.log('✅ Google Provider جاهز');
+            } else {
+                console.error('❌ GoogleAuthProvider غير متاح');
+            }
+        } catch (error) {
+            console.error('❌ خطأ في إعداد Google Provider:', error);
         }
     }
 
@@ -61,16 +78,21 @@ class FouadAcademyAuth {
     setupAuthListener() {
         if (!this.auth) return;
         
-        const { onAuthStateChanged } = window.firebaseAuthFunctions || {};
-        
-        if (onAuthStateChanged) {
-            onAuthStateChanged(this.auth, async (user) => {
-                if (user) {
-                    await this.handleUserSignIn(user);
-                } else {
-                    this.handleUserSignOut();
-                }
-            });
+        try {
+            const { onAuthStateChanged } = window.firebaseAuthFunctions || {};
+            
+            if (onAuthStateChanged) {
+                onAuthStateChanged(this.auth, async (user) => {
+                    if (user) {
+                        await this.handleUserSignIn(user);
+                    } else {
+                        this.handleUserSignOut();
+                    }
+                });
+                console.log('✅ Auth Listener جاهز');
+            }
+        } catch (error) {
+            console.error('❌ خطأ في Auth Listener:', error);
         }
     }
 
@@ -83,22 +105,15 @@ class FouadAcademyAuth {
             await this.createOrUpdateUserDoc(user);
             
             // تحديث المستخدم الحالي
-            const userDoc = await this.getUserDoc(user.uid);
-            const userData = userDoc?.data();
-            
             this.currentUser = {
                 id: user.uid,
-                name: user.displayName || userData?.name || 'مستخدم',
+                name: user.displayName || 'مستخدم',
                 email: user.email,
                 avatar: user.photoURL,
-                role: userData?.isAdmin ? 'admin' : 'student',
-                provider: user.providerData[0]?.providerId || 'email',
-                enrolledCourses: userData?.enrolledCourses || [1]
+                role: this.ADMIN_EMAILS.includes(user.email.toLowerCase()) ? 'admin' : 'student',
+                provider: user.providerData[0]?.providerId || 'email'
             };
 
-            // حفظ الجلسة محلياً
-            this.saveLocalSession();
-            
             this.updateUI();
             this.showNotification(`مرحباً ${this.currentUser.name}!`, 'success');
             this.closeAuthModal();
@@ -120,7 +135,6 @@ class FouadAcademyAuth {
     handleUserSignOut() {
         console.log('👋 تم تسجيل الخروج');
         this.currentUser = null;
-        this.clearLocalSession();
         this.updateUI();
     }
 
@@ -139,7 +153,10 @@ class FouadAcademyAuth {
         try {
             const { doc, setDoc, getDoc, updateDoc } = window.firebaseFirestoreFunctions || {};
             
-            if (!doc || !setDoc || !getDoc || !updateDoc) return;
+            if (!doc || !setDoc || !getDoc || !updateDoc) {
+                console.log('⚠️ Firestore functions غير متاحة');
+                return;
+            }
 
             const userRef = doc(this.db, 'users', user.uid);
             const userDoc = await getDoc(userRef);
@@ -154,32 +171,15 @@ class FouadAcademyAuth {
             };
 
             if (!userDoc.exists()) {
-                // مستخدم جديد
                 userData.joinDate = new Date().toISOString();
-                userData.enrolledCourses = [1]; // دورة مجانية
-                userData.completedCourses = [];
-                userData.totalWatchTime = 0;
-                
+                userData.enrolledCourses = [1];
                 await setDoc(userRef, userData);
-                
-                // إنشاء سجل اشتراك في الدورة المجانية
-                await setDoc(doc(this.db, 'enrollments', `${user.uid}_1`), {
-                    userId: user.uid,
-                    courseId: 1,
-                    enrolledAt: new Date().toISOString(),
-                    progress: 0,
-                    completed: false,
-                    watchedVideos: []
-                });
-                
                 console.log('👤 تم إنشاء مستخدم جديد');
             } else {
-                // تحديث المستخدم الموجود
                 await updateDoc(userRef, {
                     lastLogin: userData.lastLogin,
                     avatar: userData.avatar
                 });
-                
                 console.log('🔄 تم تحديث بيانات المستخدم');
             }
         } catch (error) {
@@ -187,54 +187,49 @@ class FouadAcademyAuth {
         }
     }
 
-    // الحصول على مستند المستخدم
-    async getUserDoc(uid) {
-        if (!this.db) return null;
-        
-        try {
-            const { doc, getDoc } = window.firebaseFirestoreFunctions || {};
-            if (!doc || !getDoc) return null;
-            
-            const userRef = doc(this.db, 'users', uid);
-            return await getDoc(userRef);
-        } catch (error) {
-            console.error('خطأ في جلب مستند المستخدم:', error);
-            return null;
-        }
-    }
-
     // تسجيل دخول Google
     async loginWithGoogle() {
-        if (!this.isFirebaseReady || !this.googleProvider) {
-            this.showNotification('خدمة Google غير متاحة حالياً', 'error');
+        console.log('🌐 محاولة تسجيل دخول Google...');
+        console.log('Firebase Ready:', this.isFirebaseReady);
+        console.log('Google Provider:', !!this.googleProvider);
+        console.log('Auth:', !!this.auth);
+        
+        if (!this.isFirebaseReady) {
+            this.showNotification('⚠️ Firebase غير متصل. جاري إعادة المحاولة...', 'warning');
+            // إعادة محاولة تهيئة Firebase
+            await this.initializeFirebase();
+            return;
+        }
+
+        if (!this.googleProvider) {
+            this.showNotification('❌ Google Provider غير متاح', 'error');
             return;
         }
 
         try {
-            console.log('🌐 بدء تسجيل دخول Google الحقيقي...');
-            this.showNotification('جاري فتح نافذة Google...', 'info');
+            this.showNotification('🌐 جاري فتح نافذة Google...', 'info');
 
             const { signInWithPopup } = window.firebaseAuthFunctions || {};
             if (!signInWithPopup) {
-                throw new Error('وظائف Firebase غير متاحة');
+                throw new Error('signInWithPopup غير متاح');
             }
 
+            console.log('🚀 بدء signInWithPopup...');
             const result = await signInWithPopup(this.auth, this.googleProvider);
-            console.log('✅ تم تسجيل الدخول بـ Google بنجاح:', result.user.email);
+            console.log('✅ تم تسجيل الدخول بـ Google:', result.user.email);
             
-            // Firebase سيتولى باقي العملية عبر onAuthStateChanged
-
         } catch (error) {
-            console.error('❌ خطأ في تسجيل دخول Google:', error);
+            console.error('❌ خطأ تفصيلي في Google:', error);
             
             const errorMessages = {
                 'auth/popup-closed-by-user': 'تم إغلاق نافذة Google',
-                'auth/popup-blocked': 'تم حظر النافذة المنبثقة. يرجى السماح بالنوافذ المنبثقة',
+                'auth/popup-blocked': 'تم حظر النافذة المنبثقة. يرجى السماح بالنوافذ المنبثقة في المتصفح',
                 'auth/network-request-failed': 'خطأ في الاتصال بالإنترنت',
-                'auth/internal-error': 'خطأ داخلي في الخدمة'
+                'auth/internal-error': 'خطأ داخلي في خدمة Google',
+                'auth/unauthorized-domain': 'النطاق غير مصرح له'
             };
 
-            const errorMessage = errorMessages[error.code] || 'حدث خطأ في تسجيل الدخول بـ Google';
+            const errorMessage = errorMessages[error.code] || `خطأ في Google: ${error.message}`;
             this.showNotification(errorMessage, 'error');
         }
     }
@@ -242,20 +237,17 @@ class FouadAcademyAuth {
     // تسجيل دخول بالبريد الإلكتروني
     async loginWithEmail(email, password) {
         if (!this.isFirebaseReady) {
-            this.showNotification('خدمة المصادقة غير متاحة', 'error');
+            this.showNotification('⚠️ خدمة المصادقة غير متاحة', 'error');
             return;
         }
 
         try {
-            console.log('📧 تسجيل دخول بالبريد الإلكتروني:', email);
-            
             const { signInWithEmailAndPassword } = window.firebaseAuthFunctions || {};
             if (!signInWithEmailAndPassword) {
-                throw new Error('وظائف Firebase غير متاحة');
+                throw new Error('signInWithEmailAndPassword غير متاح');
             }
             
             await signInWithEmailAndPassword(this.auth, email, password);
-            console.log('✅ تم تسجيل الدخول بالبريد الإلكتروني');
             
         } catch (error) {
             console.error('❌ خطأ في تسجيل الدخول:', error);
@@ -264,8 +256,7 @@ class FouadAcademyAuth {
                 'auth/user-not-found': 'البريد الإلكتروني غير مسجل',
                 'auth/wrong-password': 'كلمة المرور غير صحيحة',
                 'auth/invalid-email': 'البريد الإلكتروني غير صحيح',
-                'auth/too-many-requests': 'تم تجاوز عدد المحاولات. حاول لاحقاً',
-                'auth/user-disabled': 'تم تعطيل هذا الحساب'
+                'auth/too-many-requests': 'تم تجاوز عدد المحاولات. حاول لاحقاً'
             };
 
             const errorMessage = errorMessages[error.code] || 'حدث خطأ في تسجيل الدخول';
@@ -277,22 +268,18 @@ class FouadAcademyAuth {
     // التسجيل بالبريد الإلكتروني
     async registerWithEmail(name, email, password) {
         if (!this.isFirebaseReady) {
-            this.showNotification('خدمة المصادقة غير متاحة', 'error');
+            this.showNotification('⚠️ خدمة المصادقة غير متاحة', 'error');
             return;
         }
 
         try {
-            console.log('📝 إنشاء حساب جديد:', email);
-            
             const { createUserWithEmailAndPassword, updateProfile } = window.firebaseAuthFunctions || {};
             if (!createUserWithEmailAndPassword || !updateProfile) {
-                throw new Error('وظائف Firebase غير متاحة');
+                throw new Error('Firebase functions غير متاحة');
             }
             
             const result = await createUserWithEmailAndPassword(this.auth, email, password);
             await updateProfile(result.user, { displayName: name });
-            
-            console.log('✅ تم إنشاء الحساب بنجاح');
             
         } catch (error) {
             console.error('❌ خطأ في إنشاء الحساب:', error);
@@ -300,8 +287,7 @@ class FouadAcademyAuth {
             const errorMessages = {
                 'auth/email-already-in-use': 'البريد الإلكتروني مستخدم بالفعل',
                 'auth/weak-password': 'كلمة المرور ضعيفة جداً',
-                'auth/invalid-email': 'البريد الإلكتروني غير صحيح',
-                'auth/operation-not-allowed': 'هذه العملية غير مسموحة'
+                'auth/invalid-email': 'البريد الإلكتروني غير صحيح'
             };
 
             const errorMessage = errorMessages[error.code] || 'حدث خطأ في إنشاء الحساب';
@@ -312,21 +298,16 @@ class FouadAcademyAuth {
 
     // تسجيل الخروج
     async logout() {
-        if (!this.isFirebaseReady) {
-            this.handleUserSignOut();
-            this.showNotification('تم تسجيل الخروج', 'info');
-            return;
-        }
-
         try {
-            const { signOut } = window.firebaseAuthFunctions || {};
-            if (signOut) {
-                await signOut(this.auth);
+            if (this.isFirebaseReady) {
+                const { signOut } = window.firebaseAuthFunctions || {};
+                if (signOut) {
+                    await signOut(this.auth);
+                }
             }
             
             this.showNotification('تم تسجيل الخروج بنجاح', 'success');
             
-            // العودة للصفحة الرئيسية إذا كان في صفحة إدارية
             if (window.location.pathname.includes('admin/')) {
                 setTimeout(() => {
                     window.location.href = '../index.html';
@@ -339,70 +320,27 @@ class FouadAcademyAuth {
         }
     }
 
-    // حفظ الجلسة محلياً
-    saveLocalSession() {
-        if (this.currentUser) {
-            const sessionData = {
-                user: this.currentUser,
-                timestamp: new Date().toISOString()
-            };
-            localStorage.setItem('fouad_academy_session', JSON.stringify(sessionData));
-        }
-    }
-
-    // تحميل الجلسة المحلية
-    loadLocalSession() {
-        if (this.isFirebaseReady) return; // لا نحتاج للجلسة المحلية مع Firebase
-        
-        const session = localStorage.getItem('fouad_academy_session');
-        if (session) {
-            try {
-                const sessionData = JSON.parse(session);
-                if (sessionData.user) {
-                    this.currentUser = sessionData.user;
-                    this.updateUI();
-                }
-            } catch (error) {
-                console.error('خطأ في تحميل الجلسة المحلية:', error);
-                this.clearLocalSession();
-            }
-        }
-    }
-
-    // مسح الجلسة المحلية
-    clearLocalSession() {
-        localStorage.removeItem('fouad_academy_session');
-    }
-
     // ربط الأحداث
     bindEvents() {
-        // ربط نماذج المصادقة
-        this.bindLoginForm();
-        this.bindRegisterForm();
-    }
-
-    // ربط نموذج تسجيل الدخول
-    bindLoginForm() {
         const loginForm = document.getElementById('loginFormElement');
         if (loginForm) {
-            loginForm.removeEventListener('submit', this.handleLoginSubmit);
-            loginForm.addEventListener('submit', this.handleLoginSubmit.bind(this));
+            loginForm.onsubmit = (e) => {
+                e.preventDefault();
+                this.handleLoginSubmit();
+            };
         }
-    }
 
-    // ربط نموذج التسجيل
-    bindRegisterForm() {
         const registerForm = document.getElementById('registerFormElement');
         if (registerForm) {
-            registerForm.removeEventListener('submit', this.handleRegisterSubmit);
-            registerForm.addEventListener('submit', this.handleRegisterSubmit.bind(this));
+            registerForm.onsubmit = (e) => {
+                e.preventDefault();
+                this.handleRegisterSubmit();
+            };
         }
     }
 
-    // معالجة إرسال نموذج تسجيل الدخول
-    async handleLoginSubmit(event) {
-        event.preventDefault();
-        
+    // معالجة تسجيل الدخول
+    async handleLoginSubmit() {
         const email = document.getElementById('loginEmail').value.trim();
         const password = document.getElementById('loginPassword').value;
         
@@ -414,14 +352,12 @@ class FouadAcademyAuth {
         try {
             await this.loginWithEmail(email, password);
         } catch (error) {
-            // الخطأ تم التعامل معه في الدالة
+            // الخطأ تم التعامل معه
         }
     }
 
-    // معالجة إرسال نموذج التسجيل
-    async handleRegisterSubmit(event) {
-        event.preventDefault();
-        
+    // معالجة التسجيل
+    async handleRegisterSubmit() {
         const name = document.getElementById('registerName').value.trim();
         const email = document.getElementById('registerEmail').value.trim();
         const password = document.getElementById('registerPassword').value;
@@ -445,7 +381,7 @@ class FouadAcademyAuth {
         try {
             await this.registerWithEmail(name, email, password);
         } catch (error) {
-            // الخطأ تم التعامل معه في الدالة
+            // الخطأ تم التعامل معه
         }
     }
 
@@ -487,10 +423,7 @@ class FouadAcademyAuth {
             registerForm.classList.add('hidden');
             modal.classList.add('show');
             
-            // إضافة زر Google
             setTimeout(() => this.addGoogleButton(), 200);
-            
-            // تركيز على حقل البريد
             setTimeout(() => {
                 const emailField = document.getElementById('loginEmail');
                 if (emailField) emailField.focus();
@@ -509,10 +442,7 @@ class FouadAcademyAuth {
             registerForm.classList.remove('hidden');
             modal.classList.add('show');
             
-            // إضافة زر Google
             setTimeout(() => this.addGoogleButton(), 200);
-            
-            // تركيز على حقل الاسم
             setTimeout(() => {
                 const nameField = document.getElementById('registerName');
                 if (nameField) nameField.focus();
@@ -544,7 +474,6 @@ class FouadAcademyAuth {
 
     // إضافة زر Google
     addGoogleButton() {
-        // إزالة الأزرار الموجودة أولاً
         document.querySelectorAll('.google-auth-btn').forEach(btn => btn.remove());
 
         const forms = ['loginForm', 'registerForm'];
@@ -563,31 +492,24 @@ class FouadAcademyAuth {
                             <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
                             <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
                         </svg>
-                        تسجيل الدخول بـ Google
+                        ${this.isFirebaseReady ? 'تسجيل الدخول بـ Google' : 'Google غير متاح'}
                     </div>
                 `;
                 googleBtn.style.cssText = `
-                    background: #fff !important;
-                    color: #333 !important;
-                    border: 1px solid #dadce0 !important;
+                    background: ${this.isFirebaseReady ? '#fff' : '#f5f5f5'} !important;
+                    color: ${this.isFirebaseReady ? '#333' : '#999'} !important;
+                    border: 1px solid ${this.isFirebaseReady ? '#dadce0' : '#ddd'} !important;
                     margin-top: 15px;
                     font-weight: 500;
-                    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-                    transition: all 0.3s ease;
+                    ${this.isFirebaseReady ? 'cursor: pointer;' : 'cursor: not-allowed;'}
                 `;
                 
-                // تأثيرات التفاعل
-                googleBtn.addEventListener('mouseenter', () => {
-                    googleBtn.style.boxShadow = '0 2px 8px rgba(0,0,0,0.15)';
-                    googleBtn.style.transform = 'translateY(-1px)';
-                });
+                if (this.isFirebaseReady) {
+                    googleBtn.onclick = () => this.loginWithGoogle();
+                } else {
+                    googleBtn.onclick = () => this.showNotification('⚠️ Firebase غير متصل', 'warning');
+                }
                 
-                googleBtn.addEventListener('mouseleave', () => {
-                    googleBtn.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)';
-                    googleBtn.style.transform = 'translateY(0)';
-                });
-
-                googleBtn.onclick = () => this.loginWithGoogle();
                 form.appendChild(googleBtn);
             }
         });
@@ -595,11 +517,8 @@ class FouadAcademyAuth {
 
     // إعداد النظام الاحتياطي
     setupFallbackAuth() {
-        console.log('⚠️ Firebase غير متاح - استخدام النظام الاحتياطي');
+        console.log('⚠️ إعداد النظام الاحتياطي');
         this.isFirebaseReady = false;
-        
-        // يمكن إضافة نظام احتياطي هنا إذا لزم الأمر
-        this.loadLocalSession();
         this.updateUI();
     }
 
@@ -626,77 +545,26 @@ class FouadAcademyAuth {
             box-shadow: 0 4px 20px rgba(0,0,0,0.2);
             max-width: 400px;
             font-size: 0.95rem;
-            animation: slideInRight 0.3s ease;
         `;
         notification.textContent = message;
         
         document.body.appendChild(notification);
+        setTimeout(() => notification.remove(), 4000);
         
-        // إزالة الإشعار بعد 4 ثوان
-        setTimeout(() => {
-            notification.style.animation = 'slideOutRight 0.3s ease';
-            setTimeout(() => notification.remove(), 300);
-        }, 4000);
+        console.log(`${type.toUpperCase()}: ${message}`);
     }
 
-    // الحصول على المستخدم الحالي
-    getCurrentUser() {
-        return this.currentUser;
-    }
-
-    // التحقق من الدور
-    hasRole(role) {
-        return this.currentUser && this.currentUser.role === role;
-    }
-
-    // التحقق من الصلاحية
-    hasPermission(permission) {
-        if (!this.currentUser) return false;
-
-        const permissions = {
-            admin: ['manage_users', 'manage_courses', 'view_analytics', 'manage_payments'],
-            student: ['view_courses', 'enroll_courses', 'view_profile']
-        };
-
-        return permissions[this.currentUser.role]?.includes(permission) || false;
-    }
+    // الوظائف المساعدة
+    getCurrentUser() { return this.currentUser; }
+    hasRole(role) { return this.currentUser && this.currentUser.role === role; }
 }
 
-// إضافة تنسيقات الرسوم المتحركة
-const animationStyles = document.createElement('style');
-animationStyles.textContent = `
-    @keyframes slideInRight {
-        from {
-            opacity: 0;
-            transform: translateX(100px);
-        }
-        to {
-            opacity: 1;
-            transform: translateX(0);
-        }
-    }
-    
-    @keyframes slideOutRight {
-        from {
-            opacity: 1;
-            transform: translateX(0);
-        }
-        to {
-            opacity: 0;
-            transform: translateX(100px);
-        }
-    }
-`;
-document.head.appendChild(animationStyles);
-
-// إنشاء مثيل وحيد من نظام المصادقة
+// إنشاء مثيل النظام
 const fouadAuth = new FouadAcademyAuth();
 
-// تصدير للنطاق العام
+// ربط بالنطاق العام
 window.fouadAuth = fouadAuth;
 window.currentUser = fouadAuth.getCurrentUser();
-
-// ربط الوظائف بالنطاق العام للتوافق مع HTML
 window.showLogin = () => fouadAuth.showLogin();
 window.showRegister = () => fouadAuth.showRegister();
 window.closeAuthModal = () => fouadAuth.closeAuthModal();
@@ -706,9 +574,7 @@ window.logout = () => fouadAuth.logout();
 window.updateNavigationState = () => fouadAuth.updateUI();
 window.goToDashboard = () => fouadAuth.goToDashboard();
 window.loginWithGoogle = () => fouadAuth.loginWithGoogle();
+window.handleLogin = () => fouadAuth.handleLoginSubmit();
+window.handleRegister = () => fouadAuth.handleRegisterSubmit();
 
-// معالجات النماذج للتوافق مع HTML
-window.handleLogin = (event) => fouadAuth.handleLoginSubmit(event);
-window.handleRegister = (event) => fouadAuth.handleRegisterSubmit(event);
-
-console.log('✅ تم تحميل نظام مصادقة منصة الفؤاد التعليمية بنجاح!');
+console.log('✅ نظام المصادقة جاهز!');
