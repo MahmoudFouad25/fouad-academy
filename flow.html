@@ -5,1538 +5,2059 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>رحلة التدفق - الساعة الأولى</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&display=swap');
         
+        :root {
+            /* ألوان منظور الفؤاد */
+            --gold-primary: #FFD700;
+            --gold-light: #FFF3CD;
+            --sun-orange: #FFA500;
+            --sun-red: #FF6347;
+            --dark-bg: #0A1628;
+            --dark-lighter: #1E3A5F;
+            --white: #FFFFFF;
+            
+            /* ألوان الأشواق التسعة */
+            --longing-1: #E11D48;
+            --longing-2: #EC4899;
+            --longing-3: #F97316;
+            --longing-4: #9333EA;
+            --longing-5: #22C55E;
+            --longing-6: #3B82F6;
+            --longing-7: #FBBF24;
+            --longing-8: #7F1D1D;
+            --longing-9: #14B8A6;
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
-            font-family: 'Cairo', sans-serif;
-            background: #0f0f0f;
-            color: white;
+            font-family: 'Tajawal', sans-serif;
+            background: var(--dark-bg);
+            color: var(--white);
             overflow: hidden;
             height: 100vh;
             direction: rtl;
         }
-        
+
+        /* الخلفية الكونية */
+        .cosmic-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: radial-gradient(ellipse at center top, var(--dark-lighter) 0%, var(--dark-bg) 50%);
+        }
+
+        .islamic-pattern {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        /* الشرائح */
         .slide {
             display: none;
+            width: 100%;
             height: 100vh;
-            width: 100vw;
             position: relative;
             padding: 60px 80px;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .slide.active {
+            display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            text-align: center;
-            opacity: 0;
-            transform: translateX(100px);
-            transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        }
-        
-        .slide.active {
-            display: flex;
             opacity: 1;
-            transform: translateX(0);
+            transform: translateY(0);
         }
 
-        /* Slide backgrounds with gradients */
-        .intro-slide { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-        .energy-slide { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
-        .passion-slide { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
-        .flow-slide { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
-        .dark-slide { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); }
-        
-        .slide-number {
-            position: absolute;
-            top: 40px;
-            left: 60px;
-            font-size: 24px;
-            opacity: 0.7;
-            background: rgba(255,255,255,0.2);
-            padding: 10px 20px;
-            border-radius: 30px;
-        }
-
+        /* Progress Bar */
         .progress-bar {
-            position: absolute;
+            position: fixed;
             top: 0;
             left: 0;
             height: 4px;
-            background: linear-gradient(90deg, #FFD700, #FFA500);
+            background: linear-gradient(90deg, var(--gold-primary), var(--sun-orange));
             transition: width 0.5s ease;
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(255, 215, 0, 0.5);
         }
-        
-        h1 {
-            font-size: 5em;
-            font-weight: 900;
-            margin-bottom: 30px;
-            text-shadow: 0 10px 40px rgba(0,0,0,0.3);
-            animation: glow 2s ease-in-out infinite alternate;
-        }
-        
-        @keyframes glow {
-            from { filter: drop-shadow(0 0 20px rgba(255,255,255,0.3)); }
-            to { filter: drop-shadow(0 0 40px rgba(255,255,255,0.6)); }
-        }
-        
-        h2 {
-            font-size: 3em;
-            font-weight: 700;
-            margin-bottom: 20px;
-            color: #FFD700;
-        }
-        
-        .equation {
-            font-size: 3.5em;
-            font-weight: 700;
-            background: rgba(255,255,255,0.1);
-            padding: 40px 80px;
+
+        /* Slide Counter */
+        .slide-counter {
+            position: absolute;
+            top: 40px;
+            left: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 10px 20px;
             border-radius: 30px;
-            margin: 40px auto;
-            backdrop-filter: blur(10px);
-            border: 3px solid rgba(255,255,255,0.3);
-            display: inline-block;
-            animation: pulse 2s infinite;
+            font-size: 18px;
+            color: var(--gold-light);
         }
-        
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+
+        /* الشريحة 1: الافتتاحية */
+        .opening-slide {
+            background: linear-gradient(135deg, var(--dark-bg) 0%, var(--dark-lighter) 100%);
         }
-        
-        .equation-big {
-            font-size: 4.5em;
-            padding: 50px 100px;
-            background: linear-gradient(145deg, rgba(255,215,0,0.2), rgba(255,165,0,0.2));
-            border: 4px solid #FFD700;
+
+        .main-equation {
+            font-size: 5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--gold-primary) 0%, var(--sun-orange) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+            margin: 40px 0;
+            animation: glow 3s ease-in-out infinite;
+            letter-spacing: 5px;
         }
-        
-        .activity-box {
-            background: rgba(255,255,255,0.1);
-            border-radius: 25px;
-            padding: 40px;
-            margin: 30px auto;
+
+        @keyframes glow {
+            0%, 100% { 
+                filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.5));
+                transform: scale(1);
+            }
+            50% { 
+                filter: drop-shadow(0 0 40px rgba(255, 215, 0, 0.8));
+                transform: scale(1.05);
+            }
+        }
+
+        /* السؤال التفاعلي */
+        .question-box {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-radius: 30px;
+            padding: 60px;
+            text-align: center;
+            animation: slideUp 0.8s ease-out;
             max-width: 900px;
-            backdrop-filter: blur(10px);
-            border: 2px solid rgba(255,255,255,0.3);
         }
-        
-        .activity-title {
-            font-size: 2.5em;
-            color: #00ff88;
-            margin-bottom: 20px;
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .question-text {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: var(--gold-primary);
+            margin-bottom: 30px;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+        }
+
+        /* شريحة الموبايل */
+        .mobile-demo {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 20px;
+            gap: 100px;
         }
-        
-        .emoji {
-            font-size: 1.2em;
+
+        .phone-visual {
+            width: 300px;
+            height: 600px;
+            background: #222;
+            border-radius: 40px;
+            border: 8px solid #444;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+        }
+
+        .battery-indicator {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .battery-percentage {
+            font-size: 6rem;
+            font-weight: 900;
+            margin-bottom: 20px;
+        }
+
+        .battery-low { color: var(--longing-1); }
+        .battery-full { color: var(--longing-5); }
+
+        .battery-emotion {
+            font-size: 8rem;
             animation: bounce 2s infinite;
         }
-        
+
         @keyframes bounce {
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-20px); }
         }
-        
-        .list {
-            text-align: right;
-            font-size: 2em;
-            line-height: 1.8;
+
+        /* لعبة الكور */
+        .balls-game {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 30px;
+            padding: 80px;
+            text-align: center;
+        }
+
+        .balls-container {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin: 50px 0;
+        }
+
+        .ball {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            animation: float 3s ease-in-out infinite;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .ball:nth-child(1) {
+            background: linear-gradient(135deg, var(--longing-1), var(--longing-2));
+            animation-delay: 0s;
+        }
+
+        .ball:nth-child(2) {
+            background: linear-gradient(135deg, var(--longing-3), var(--longing-4));
+            animation-delay: 0.5s;
+        }
+
+        .ball:nth-child(3) {
+            background: linear-gradient(135deg, var(--longing-5), var(--longing-6));
+            animation-delay: 1s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-100px) rotate(180deg); }
+        }
+
+        .timer {
+            font-size: 4rem;
+            font-weight: 900;
+            color: var(--gold-primary);
+            margin-top: 40px;
+        }
+
+        /* Flow State */
+        .flow-state-box {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 165, 0, 0.05));
+            border: 3px solid var(--gold-primary);
+            border-radius: 30px;
+            padding: 60px;
+            max-width: 1000px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { 
+                transform: scale(1);
+                box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+            }
+            50% { 
+                transform: scale(1.02);
+                box-shadow: 0 0 50px rgba(255, 215, 0, 0.5);
+            }
+        }
+
+        .flow-title {
+            font-size: 4rem;
+            font-weight: 900;
+            text-align: center;
+            margin-bottom: 40px;
+            background: linear-gradient(90deg, var(--gold-primary), var(--sun-orange), var(--sun-red));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .flow-points {
             list-style: none;
-            max-width: 900px;
-            margin: 0 auto;
+            font-size: 2.5rem;
+            line-height: 2;
         }
-        
-        .list li {
-            margin-bottom: 20px;
-            padding-right: 50px;
+
+        .flow-points li {
             position: relative;
-            animation: slideIn 0.5s ease-out forwards;
+            padding-right: 60px;
+            margin-bottom: 20px;
             opacity: 0;
+            animation: fadeInLeft 0.8s ease-out forwards;
         }
-        
-        .list li:nth-child(1) { animation-delay: 0.1s; }
-        .list li:nth-child(2) { animation-delay: 0.2s; }
-        .list li:nth-child(3) { animation-delay: 0.3s; }
-        .list li:nth-child(4) { animation-delay: 0.4s; }
-        .list li:nth-child(5) { animation-delay: 0.5s; }
-        
-        @keyframes slideIn {
+
+        .flow-points li:nth-child(1) { animation-delay: 0.2s; }
+        .flow-points li:nth-child(2) { animation-delay: 0.4s; }
+        .flow-points li:nth-child(3) { animation-delay: 0.6s; }
+
+        @keyframes fadeInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
             to {
                 opacity: 1;
                 transform: translateX(0);
             }
         }
-        
-        .list li:before {
+
+        .flow-points li::before {
             content: "✓";
             position: absolute;
-            right: 10px;
-            color: #00ff88;
+            right: 0;
+            color: var(--longing-5);
+            font-size: 2.5rem;
             font-weight: bold;
-            font-size: 1.2em;
         }
-        
-        .comparison {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 40px;
-            max-width: 1200px;
-            margin: 40px auto;
+
+        /* الأسئلة التفاعلية */
+        .interactive-question {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 2px solid transparent;
+            border-image: linear-gradient(135deg, var(--gold-primary), var(--sun-orange)) 1;
+            border-radius: 30px;
+            padding: 80px;
+            max-width: 1100px;
+            text-align: center;
         }
-        
-        .compare-box {
-            background: rgba(255,255,255,0.1);
-            padding: 40px;
-            border-radius: 25px;
-            backdrop-filter: blur(10px);
+
+        .big-question {
+            font-size: 4rem;
+            font-weight: 900;
+            color: var(--gold-light);
+            margin-bottom: 50px;
+            line-height: 1.3;
         }
-        
-        .compare-box.good {
-            border: 3px solid #00ff88;
-            background: rgba(0,255,136,0.1);
+
+        .question-emoji {
+            font-size: 6rem;
+            animation: rotate 4s linear infinite;
         }
-        
-        .compare-box.bad {
-            border: 3px solid #ff4444;
-            background: rgba(255,68,68,0.1);
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
-        
-        .compare-title {
-            font-size: 2.2em;
-            margin-bottom: 20px;
-            font-weight: 700;
+
+        /* المعادلة الكبيرة */
+        .equation-reveal {
+            text-align: center;
         }
-        
-        .compare-box.good .compare-title { color: #00ff88; }
-        .compare-box.bad .compare-title { color: #ff4444; }
-        
-        .flow-diagram {
-            width: 600px;
-            height: 400px;
-            margin: 40px auto;
-            position: relative;
-            background: rgba(255,255,255,0.05);
+
+        .equation-part {
+            display: inline-block;
+            font-size: 5rem;
+            font-weight: 900;
+            margin: 0 30px;
+            opacity: 0;
+            animation: popIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+        }
+
+        .equation-part:nth-child(1) { 
+            animation-delay: 0.3s;
+            color: var(--gold-primary);
+        }
+        .equation-part:nth-child(2) { 
+            animation-delay: 0.6s;
+            color: var(--white);
+        }
+        .equation-part:nth-child(3) { 
+            animation-delay: 0.9s;
+            color: var(--longing-1);
+        }
+        .equation-part:nth-child(4) { 
+            animation-delay: 1.2s;
+            color: var(--white);
+        }
+        .equation-part:nth-child(5) { 
+            animation-delay: 1.5s;
+            color: var(--longing-6);
+        }
+
+        @keyframes popIn {
+            from {
+                opacity: 0;
+                transform: scale(0) rotate(180deg);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) rotate(0deg);
+            }
+        }
+
+        /* مثال المعادلة */
+        .equation-example {
+            background: rgba(255, 255, 255, 0.05);
             border-radius: 20px;
             padding: 40px;
+            margin: 30px 0;
+            font-size: 2.5rem;
+            border-left: 5px solid var(--gold-primary);
         }
-        
+
+        .wrong-example {
+            border-left-color: var(--longing-1);
+            color: #ff8888;
+        }
+
+        .right-example {
+            border-left-color: var(--longing-5);
+            color: #88ff88;
+        }
+
+        /* رسمة التحدي والمهارة */
+        .challenge-diagram {
+            width: 800px;
+            height: 500px;
+            position: relative;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 30px;
+            overflow: hidden;
+        }
+
         .axis {
             position: absolute;
-            background: white;
-            opacity: 0.5;
+            background: var(--gold-primary);
         }
-        
+
         .axis-x {
-            bottom: 40px;
-            left: 40px;
-            right: 40px;
-            height: 2px;
+            bottom: 50px;
+            left: 50px;
+            right: 50px;
+            height: 3px;
         }
-        
+
         .axis-y {
-            left: 40px;
-            top: 40px;
-            bottom: 40px;
-            width: 2px;
+            left: 50px;
+            top: 50px;
+            bottom: 50px;
+            width: 3px;
         }
-        
+
         .axis-label {
             position: absolute;
-            font-size: 1.5em;
+            font-size: 1.8rem;
             font-weight: 600;
+            color: var(--gold-light);
         }
-        
+
         .label-x {
             bottom: 10px;
             right: 40px;
         }
-        
+
         .label-y {
-            top: 10px;
-            left: 60px;
+            top: 20px;
+            left: 80px;
         }
-        
-        .quadrant {
+
+        .zone {
             position: absolute;
-            width: 50%;
-            height: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2em;
+            font-size: 2rem;
             font-weight: 700;
-            border-radius: 15px;
-        }
-        
-        .q-flow {
-            top: 40px;
-            right: 40px;
-            background: rgba(0,255,136,0.3);
-            color: #00ff88;
-            border: 2px solid #00ff88;
-        }
-        
-        .q-anxiety {
-            top: 40px;
-            left: 40px;
-            background: rgba(255,165,0,0.3);
-            color: #FFA500;
-            border: 2px solid #FFA500;
-        }
-        
-        .q-boredom {
-            bottom: 40px;
-            left: 40px;
-            background: rgba(128,128,128,0.3);
-            color: #888;
-            border: 2px solid #888;
-        }
-        
-        .q-relaxation {
-            bottom: 40px;
-            right: 40px;
-            background: rgba(135,206,235,0.3);
-            color: #87CEEB;
-            border: 2px solid #87CEEB;
-        }
-        
-        .energy-bank {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 50px;
-            max-width: 1000px;
-            margin: 40px auto;
-        }
-        
-        .bank-section {
-            background: rgba(255,255,255,0.1);
-            padding: 40px;
-            border-radius: 25px;
-            backdrop-filter: blur(10px);
-        }
-        
-        .deposits {
-            border: 3px solid #00ff88;
-            background: rgba(0,255,136,0.1);
-        }
-        
-        .withdrawals {
-            border: 3px solid #ff4444;
-            background: rgba(255,68,68,0.1);
-        }
-        
-        .bank-title {
-            font-size: 2.5em;
-            margin-bottom: 30px;
-            font-weight: 700;
-        }
-        
-        .deposits .bank-title { color: #00ff88; }
-        .withdrawals .bank-title { color: #ff4444; }
-        
-        .bank-item {
-            font-size: 1.8em;
-            margin-bottom: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px;
-            background: rgba(255,255,255,0.05);
-            border-radius: 10px;
-        }
-        
-        .percentage {
-            font-weight: 700;
-            font-size: 1.1em;
-        }
-        
-        .deposits .percentage { color: #00ff88; }
-        .withdrawals .percentage { color: #ff4444; }
-        
-        .story-box {
-            background: linear-gradient(145deg, rgba(255,215,0,0.1), rgba(255,165,0,0.1));
-            border: 3px solid #FFD700;
-            border-radius: 30px;
-            padding: 50px;
-            max-width: 900px;
-            margin: 40px auto;
-            font-size: 2em;
-            line-height: 1.6;
-        }
-        
-        .highlight {
-            color: #FFD700;
-            font-weight: 700;
-            font-size: 1.1em;
-            text-shadow: 0 0 20px rgba(255,215,0,0.5);
-        }
-        
-        .balls-demo {
-            font-size: 8em;
-            margin: 40px 0;
-            animation: juggle 2s ease-in-out infinite;
-        }
-        
-        @keyframes juggle {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            25% { transform: translateY(-30px) rotate(10deg); }
-            50% { transform: translateY(0) rotate(0deg); }
-            75% { transform: translateY(-30px) rotate(-10deg); }
-        }
-        
-        .formula-breakdown {
-            display: flex;
-            flex-direction: column;
-            gap: 30px;
-            max-width: 1000px;
-            margin: 40px auto;
-        }
-        
-        .formula-line {
-            background: rgba(255,255,255,0.1);
-            padding: 30px;
             border-radius: 20px;
-            font-size: 2.2em;
-            backdrop-filter: blur(10px);
-            border: 2px solid rgba(255,255,255,0.3);
             transition: all 0.3s ease;
         }
-        
-        .formula-line:hover {
-            transform: scale(1.05);
-            background: rgba(255,255,255,0.15);
-            border-color: #FFD700;
-        }
-        
-        .result-zero {
-            color: #ff4444;
-            font-weight: 700;
-        }
-        
-        .result-good {
-            color: #00ff88;
-            font-weight: 700;
-        }
-        
-        .interactive-hint {
-            position: absolute;
-            bottom: 40px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 1.5em;
-            opacity: 0.7;
-            animation: fadeInOut 2s infinite;
-        }
-        
-        @keyframes fadeInOut {
-            0%, 100% { opacity: 0.3; }
-            50% { opacity: 0.9; }
-        }
-        
-        .netflix-box {
-            background: #221f1f;
-            border: 3px solid #e50914;
-            border-radius: 20px;
-            padding: 40px;
-            max-width: 900px;
-            margin: 40px auto;
-        }
-        
-        .netflix-title {
-            color: #e50914;
-            font-size: 3em;
-            font-weight: 900;
-            margin-bottom: 30px;
-        }
-        
-        .navigation-hint {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: rgba(0,0,0,0.8);
-            padding: 15px 25px;
-            border-radius: 50px;
-            font-size: 1.2em;
-            display: flex;
-            gap: 20px;
-            z-index: 1000;
-        }
-        
-        .nav-key {
-            background: rgba(255,255,255,0.2);
-            padding: 5px 15px;
-            border-radius: 5px;
-            font-weight: 600;
+
+        .zone:hover {
+            transform: scale(1.1);
+            z-index: 10;
         }
 
-        .timer {
-            position: absolute;
-            top: 40px;
+        .zone-anxiety {
+            top: 60px;
+            left: 60px;
+            width: 350px;
+            height: 180px;
+            background: rgba(225, 29, 72, 0.2);
+            border: 2px solid var(--longing-1);
+            color: var(--longing-1);
+        }
+
+        .zone-flow {
+            top: 60px;
             right: 60px;
-            font-size: 3em;
+            width: 350px;
+            height: 180px;
+            background: rgba(255, 215, 0, 0.2);
+            border: 3px solid var(--gold-primary);
+            color: var(--gold-primary);
+            animation: glow 2s infinite;
+        }
+
+        .zone-boredom {
+            bottom: 60px;
+            left: 60px;
+            width: 350px;
+            height: 180px;
+            background: rgba(108, 117, 125, 0.2);
+            border: 2px solid #6c757d;
+            color: #6c757d;
+        }
+
+        .zone-relaxation {
+            bottom: 60px;
+            right: 60px;
+            width: 350px;
+            height: 180px;
+            background: rgba(20, 184, 166, 0.2);
+            border: 2px solid var(--longing-9);
+            color: var(--longing-9);
+        }
+
+        /* Gaming Examples */
+        .gaming-comparison {
+            display: flex;
+            gap: 50px;
+            justify-content: center;
+            align-items: stretch;
+        }
+
+        .comparison-card {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 30px;
+            padding: 50px;
+            border: 2px solid;
+            transition: all 0.3s ease;
+        }
+
+        .comparison-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .gaming-card {
+            border-color: var(--longing-5);
+        }
+
+        .study-card {
+            border-color: var(--longing-1);
+        }
+
+        .card-title {
+            font-size: 3rem;
             font-weight: 700;
-            background: rgba(255,255,255,0.2);
-            padding: 15px 30px;
-            border-radius: 20px;
-            min-width: 150px;
-        }
-
-        .break-slide {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-
-        .break-content {
+            margin-bottom: 30px;
             text-align: center;
         }
 
-        .break-timer {
-            font-size: 8em;
-            font-weight: 900;
-            color: #FFD700;
-            margin: 40px 0;
-            text-shadow: 0 0 50px rgba(255,215,0,0.5);
+        .gaming-card .card-title {
+            color: var(--longing-5);
         }
 
+        .study-card .card-title {
+            color: var(--longing-1);
+        }
+
+        .feature-list {
+            list-style: none;
+            font-size: 1.8rem;
+            line-height: 2;
+        }
+
+        .feature-list li {
+            padding-right: 40px;
+            position: relative;
+            margin-bottom: 15px;
+        }
+
+        .gaming-card .feature-list li::before {
+            content: "✓";
+            position: absolute;
+            right: 0;
+            color: var(--longing-5);
+            font-size: 1.8rem;
+        }
+
+        .study-card .feature-list li::before {
+            content: "✗";
+            position: absolute;
+            right: 0;
+            color: var(--longing-1);
+            font-size: 1.8rem;
+        }
+
+        /* Activity Cards */
+        .activity-container {
+            display: flex;
+            gap: 40px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .activity-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+            border-radius: 30px;
+            padding: 50px;
+            width: 350px;
+            text-align: center;
+            border: 2px solid var(--gold-primary);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .activity-card:hover {
+            transform: translateY(-10px) scale(1.05);
+            box-shadow: 0 20px 40px rgba(255, 215, 0, 0.3);
+        }
+
+        .group-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--gold-primary);
+            margin-bottom: 20px;
+        }
+
+        .activity-task {
+            font-size: 1.8rem;
+            color: var(--white);
+            line-height: 1.5;
+        }
+
+        /* Energy Equation */
+        .energy-equation {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 30px;
+            padding: 60px;
+            margin: 40px 0;
+            border: 2px solid var(--gold-primary);
+        }
+
+        .equation-line {
+            font-size: 3rem;
+            font-weight: 700;
+            text-align: center;
+            margin: 30px 0;
+            color: var(--gold-light);
+        }
+
+        .sub-equation {
+            font-size: 2rem;
+            color: var(--longing-1);
+            text-align: center;
+            margin-top: 20px;
+            opacity: 0;
+            animation: fadeIn 1s ease-out 2s forwards;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        /* Decision Examples */
+        .decision-list {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 30px 0;
+        }
+
+        .decision-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 2rem;
+            padding: 20px;
+            margin: 15px 0;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            border-left: 5px solid var(--longing-1);
+            opacity: 0;
+            animation: slideInRight 0.5s ease-out forwards;
+        }
+
+        .decision-item:nth-child(1) { animation-delay: 0.2s; }
+        .decision-item:nth-child(2) { animation-delay: 0.4s; }
+        .decision-item:nth-child(3) { animation-delay: 0.6s; }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .energy-cost {
+            color: var(--longing-1);
+            font-weight: 700;
+            font-size: 2.5rem;
+        }
+
+        /* Battery Animation */
+        .battery-visual {
+            width: 400px;
+            height: 200px;
+            background: #333;
+            border-radius: 20px;
+            border: 5px solid #555;
+            position: relative;
+            margin: 50px auto;
+            overflow: hidden;
+        }
+
+        .battery-fill {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(135deg, var(--longing-5), var(--longing-6));
+            transition: height 1s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            font-weight: 900;
+            color: var(--white);
+        }
+
+        /* Steve Jobs Story */
+        .story-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
+            border-radius: 30px;
+            padding: 60px;
+            max-width: 1000px;
+            text-align: center;
+            border: 2px solid var(--gold-primary);
+        }
+
+        .story-title {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--gold-primary);
+            margin-bottom: 30px;
+        }
+
+        .story-image {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #333, #111);
+            margin: 30px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 6rem;
+            color: var(--gold-primary);
+        }
+
+        .story-quote {
+            font-size: 2.5rem;
+            font-style: italic;
+            color: var(--gold-light);
+            margin: 30px 0;
+            line-height: 1.5;
+        }
+
+        /* Energy Bank */
+        .energy-bank {
+            display: flex;
+            gap: 50px;
+            justify-content: center;
+            margin: 50px 0;
+        }
+
+        .bank-column {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 30px;
+            padding: 40px;
+            max-width: 500px;
+        }
+
+        .deposits {
+            border: 2px solid var(--longing-5);
+        }
+
+        .withdrawals {
+            border: 2px solid var(--longing-1);
+        }
+
+        .bank-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .deposits .bank-title {
+            color: var(--longing-5);
+        }
+
+        .withdrawals .bank-title {
+            color: var(--longing-1);
+        }
+
+        .bank-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.8rem;
+            padding: 15px;
+            margin: 10px 0;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 15px;
+        }
+
+        .bank-value {
+            font-weight: 700;
+            font-size: 2rem;
+        }
+
+        .deposits .bank-value {
+            color: var(--longing-5);
+        }
+
+        .withdrawals .bank-value {
+            color: var(--longing-1);
+        }
+
+        /* Personal Energy Calculator */
+        .calculator-card {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 30px;
+            padding: 60px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .calc-title {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--gold-primary);
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .calc-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 2rem;
+            padding: 20px;
+            margin: 15px 0;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+        }
+
+        .calc-result {
+            font-size: 4rem;
+            font-weight: 900;
+            text-align: center;
+            margin-top: 40px;
+            padding: 30px;
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 165, 0, 0.05));
+            border-radius: 20px;
+            border: 3px solid var(--gold-primary);
+        }
+
+        /* Passion Equation */
+        .passion-reveal {
+            text-align: center;
+            padding: 60px;
+        }
+
+        .lie-statement {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--longing-1);
+            margin-bottom: 40px;
+            text-decoration: line-through;
+            opacity: 0;
+            animation: strikethrough 1s ease-out 1s forwards;
+        }
+
+        @keyframes strikethrough {
+            to { opacity: 1; }
+        }
+
+        .passion-equation {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 30px;
+            padding: 50px;
+            margin: 40px 0;
+            border: 2px solid var(--gold-primary);
+        }
+
+        /* Passion Activity */
+        .drawing-groups {
+            display: flex;
+            gap: 40px;
+            justify-content: center;
+            margin: 50px 0;
+        }
+
+        .drawing-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 30px;
+            padding: 40px;
+            width: 350px;
+            text-align: center;
+            border: 3px solid;
+            transition: all 0.3s ease;
+        }
+
+        .drawing-card:hover {
+            transform: scale(1.05);
+        }
+
+        .group-1 { border-color: var(--longing-1); }
+        .group-2 { border-color: var(--longing-3); }
+        .group-3 { border-color: var(--longing-5); }
+
+        /* Netflix Algorithm */
+        .netflix-analysis {
+            background: #141414;
+            border-radius: 30px;
+            padding: 60px;
+            margin: 40px 0;
+            border: 2px solid #e50914;
+        }
+
+        .netflix-title {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #e50914;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .netflix-feature {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            font-size: 2rem;
+            padding: 20px;
+            margin: 20px 0;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            opacity: 0;
+            animation: fadeInUp 0.5s ease-out forwards;
+        }
+
+        .netflix-feature:nth-child(1) { animation-delay: 0.2s; }
+        .netflix-feature:nth-child(2) { animation-delay: 0.4s; }
+        .netflix-feature:nth-child(3) { animation-delay: 0.6s; }
+        .netflix-feature:nth-child(4) { animation-delay: 0.8s; }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .feature-number {
+            width: 60px;
+            height: 60px;
+            background: #e50914;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: var(--white);
+            font-size: 2rem;
+        }
+
+        /* Pokemon Story */
+        .pokemon-story {
+            background: linear-gradient(135deg, #ffcb05, #3d7dca);
+            border-radius: 30px;
+            padding: 60px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pokemon-story::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .pokemon-title {
+            font-size: 3.5rem;
+            font-weight: 900;
+            color: var(--white);
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);
+            margin-bottom: 30px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Passion Map */
+        .passion-map {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 50px 0;
+        }
+
+        .circles-container {
+            position: relative;
+            width: 600px;
+            height: 600px;
+        }
+
+        .passion-circle {
+            position: absolute;
+            border-radius: 50%;
+            border: 3px solid var(--gold-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--gold-light);
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+        }
+
+        .circle-small {
+            width: 200px;
+            height: 200px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 3;
+            background: rgba(255, 215, 0, 0.2);
+        }
+
+        .circle-medium {
+            width: 350px;
+            height: 350px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 2;
+            background: rgba(255, 215, 0, 0.1);
+        }
+
+        .circle-large {
+            width: 500px;
+            height: 500px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1;
+            background: rgba(255, 215, 0, 0.05);
+        }
+
+        /* Final Formula */
+        .final-formula {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 165, 0, 0.1));
+            border: 4px solid var(--gold-primary);
+            border-radius: 40px;
+            padding: 80px;
+            text-align: center;
+            box-shadow: 0 0 50px rgba(255, 215, 0, 0.3);
+        }
+
+        .formula-text {
+            font-size: 5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--gold-primary), var(--sun-orange));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 40px;
+            animation: glow 2s infinite;
+        }
+
+        .formula-subtitle {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--white);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        /* Break Challenge */
+        .break-challenge {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 30px;
+            padding: 60px;
+            text-align: center;
+        }
+
+        .challenge-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: var(--gold-primary);
+            margin-bottom: 40px;
+        }
+
+        .challenge-steps {
+            list-style: none;
+            font-size: 2.5rem;
+            line-height: 2;
+            text-align: right;
+        }
+
+        .challenge-steps li {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 20px 0;
+            position: relative;
+            padding-right: 80px;
+            border-left: 5px solid var(--gold-primary);
+        }
+
+        .challenge-steps li::before {
+            content: attr(data-number);
+            position: absolute;
+            right: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            background: var(--gold-primary);
+            color: var(--dark-bg);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 2rem;
+        }
+
+        /* Timer */
+        .break-timer {
+            font-size: 8rem;
+            font-weight: 900;
+            color: var(--gold-primary);
+            text-align: center;
+            margin: 50px 0;
+            animation: pulse 1s infinite;
+        }
+
+        /* Navigation Dots */
+        .nav-dots {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .dot.active {
+            background: var(--gold-primary);
+            transform: scale(1.5);
+        }
+
+        /* Responsive */
         @media (max-width: 1200px) {
-            h1 { font-size: 3.5em; }
-            h2 { font-size: 2.5em; }
-            .equation { font-size: 2.5em; padding: 30px 60px; }
-            .list { font-size: 1.6em; }
+            .slide {
+                padding: 40px;
+            }
+
+            .main-equation {
+                font-size: 3.5rem;
+            }
+
+            .question-text {
+                font-size: 2.5rem;
+            }
+
+            .flow-title {
+                font-size: 3rem;
+            }
+
+            .flow-points {
+                font-size: 2rem;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- الخلفية -->
+    <div class="cosmic-bg">
+        <div class="islamic-pattern"></div>
+    </div>
+
+    <!-- Progress Bar -->
     <div class="progress-bar" id="progressBar"></div>
-    
-    <!-- Slide 1: Opening -->
-    <div class="slide intro-slide active" data-slide="1">
-        <div class="slide-number">1 / 45</div>
-        <h1>رحلة اكتشاف التدفق</h1>
-        <h2>الساعة الأولى: فك الشفرة</h2>
-        <div class="equation equation-big">
-            التدفق = الطاقة × الشغف
-        </div>
-        <div class="interactive-hint">اضغط السهم الأيمن للمتابعة ←</div>
+
+    <!-- الشريحة 1: الافتتاحية -->
+    <div class="slide active opening-slide">
+        <div class="slide-counter">1 / 50</div>
+        <div class="main-equation">التدفق = الطاقة × الشغف</div>
     </div>
 
-    <!-- Slide 2: The Big Question -->
-    <div class="slide dark-slide" data-slide="2">
-        <div class="slide-number">2 / 45</div>
-        <h1>السؤال الكبير</h1>
-        <div class="equation">التدفق = الطاقة × الشغف</div>
-        <h2 style="margin-top: 50px; color: #FFD700;">مين فاكر المعادلة؟</h2>
-        <p style="font-size: 2em; margin-top: 30px; opacity: 0.8;">النهاردة مش هنتكلم عنها بس...</p>
-        <p style="font-size: 3em; margin-top: 20px; color: #00ff88; font-weight: 700;">هنعيشها! 🚀</p>
-    </div>
-
-    <!-- Slide 3: Mobile Battery Metaphor -->
-    <div class="slide energy-slide" data-slide="3">
-        <div class="slide-number">3 / 45</div>
-        <h2>تجربة البطارية</h2>
-        <div style="font-size: 10em; margin: 40px 0;">📱</div>
-        <div class="comparison">
-            <div class="compare-box bad">
-                <div class="compare-title">بطارية 1% 🔴</div>
-                <ul class="list" style="font-size: 1.5em;">
-                    <li>قلق</li>
-                    <li>توتر</li>
-                    <li>خوف</li>
-                </ul>
-            </div>
-            <div class="compare-box good">
-                <div class="compare-title">بطارية 100% 🟢</div>
-                <ul class="list" style="font-size: 1.5em;">
-                    <li>راحة</li>
-                    <li>أمان</li>
-                    <li>قوة</li>
-                </ul>
-            </div>
-        </div>
-        <p style="font-size: 2.5em; margin-top: 40px; color: #FFD700;">كده بالظبط الطاقة والشغف بتاعتك!</p>
-    </div>
-
-    <!-- Slide 4: Live Activity - 3 Balls -->
-    <div class="slide flow-slide" data-slide="4">
-        <div class="slide-number">4 / 45</div>
-        <h2>نشاط: لعبة الكور الثلاثة</h2>
-        <div class="balls-demo">⚽ 🏀 🎾</div>
-        <div class="activity-box">
-            <div class="activity-title">
-                <span class="emoji">🎯</span>
-                التحدي
-            </div>
-            <p style="font-size: 2em;">30 ثانية - خلي الكور الثلاثة في الهوا!</p>
-            <div class="timer" id="timer">00:30</div>
-        </div>
-        <div style="margin-top: 40px; font-size: 1.8em; line-height: 1.8;">
-            <p>👀 شايفين عينيه؟</p>
-            <p>🎯 تركيزه؟</p>
-            <p>🌟 نسي الناس موجودة؟</p>
+    <!-- الشريحة 2: السؤال الافتتاحي -->
+    <div class="slide">
+        <div class="slide-counter">2 / 50</div>
+        <div class="question-box">
+            <div class="question-text">مين فاكر المعادلة اللي قولتها المرة اللي فاتت؟</div>
+            <div class="question-emoji">🤔</div>
         </div>
     </div>
 
-    <!-- Slide 5: Flow State Definition -->
-    <div class="slide dark-slide" data-slide="5">
-        <div class="slide-number">5 / 45</div>
-        <h1 style="color: #00ff88;">FLOW STATE</h1>
-        <h2>حالة التدفق</h2>
-        <ul class="list">
-            <li>الوقت بيختفي ⏰</li>
-            <li>الخوف بيختفي 😨</li>
-            <li>الطاقة بتزيد ⚡</li>
-            <li>التركيز 100% 🎯</li>
-            <li>السعادة في الإنجاز 🌟</li>
-        </ul>
-    </div>
-
-    <!-- Slide 6: Personal Connection -->
-    <div class="slide passion-slide" data-slide="6">
-        <div class="slide-number">6 / 45</div>
-        <h2>مين مر بالإحساس ده؟</h2>
-        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; margin: 60px auto; max-width: 1000px;">
-            <div class="activity-box" style="background: rgba(255,255,255,0.2);">
-                <div style="font-size: 4em;">🎮</div>
-                <p style="font-size: 1.8em;">وأنا بلعب FIFA</p>
-            </div>
-            <div class="activity-box" style="background: rgba(255,255,255,0.2);">
-                <div style="font-size: 4em;">🎨</div>
-                <p style="font-size: 1.8em;">وأنا برسم</p>
-            </div>
-            <div class="activity-box" style="background: rgba(255,255,255,0.2);">
-                <div style="font-size: 4em;">📺</div>
-                <p style="font-size: 1.8em;">وأنا بتفرج</p>
-            </div>
-        </div>
-        <div class="equation" style="margin-top: 60px;">
-            الأنشطة اللي بنحبها → Flow تلقائي
+    <!-- الشريحة 3: اليوم هنعيشها -->
+    <div class="slide">
+        <div class="slide-counter">3 / 50</div>
+        <div class="flow-state-box">
+            <div class="flow-title">النهاردة مش هنتكلم عنها بس...</div>
+            <div class="flow-title" style="color: var(--sun-orange); animation-delay: 1s;">هنعيشها! 🔥</div>
         </div>
     </div>
 
-    <!-- Slide 7: The Big Challenge -->
-    <div class="slide dark-slide" data-slide="7">
-        <div class="slide-number">7 / 45</div>
-        <h1 style="color: #FFD700;">السؤال المليون دولار</h1>
-        <div style="font-size: 3em; margin: 60px 0;">
-            <p>الأنشطة اللي "لازم" 😩</p>
-            <p style="font-size: 2em; margin: 40px 0;">↓</p>
-            <p style="color: #00ff88;">الأنشطة اللي "عايز" 😍</p>
-        </div>
-        <h2 style="margin-top: 60px;">ازاي نحول الملل لـ Flow؟</h2>
-    </div>
-
-    <!-- Slide 8: Today's Journey -->
-    <div class="slide intro-slide" data-slide="8">
-        <div class="slide-number">8 / 45</div>
-        <h2>رحلة النهاردة</h2>
-        <div style="display: flex; flex-direction: column; gap: 40px; max-width: 900px; margin: 60px auto;">
-            <div class="activity-box" style="background: rgba(255,215,0,0.2); border: 3px solid #FFD700;">
-                <h3 style="font-size: 2.5em; color: #FFD700;">الساعة الأولى</h3>
-                <p style="font-size: 2em;">فهم المعادلة</p>
+    <!-- الشريحة 4: مثال الموبايل -->
+    <div class="slide">
+        <div class="slide-counter">4 / 50</div>
+        <div class="mobile-demo">
+            <div class="phone-visual">
+                <div class="battery-indicator">
+                    <div class="battery-percentage battery-low">1%</div>
+                    <div class="battery-emotion">😰</div>
+                </div>
             </div>
-            <div class="activity-box" style="background: rgba(0,255,136,0.2); border: 3px solid #00ff88;">
-                <h3 style="font-size: 2.5em; color: #00ff88;">الساعة التانية</h3>
-                <p style="font-size: 2em;">بناء النظام</p>
-            </div>
-            <div class="activity-box" style="background: rgba(79,172,254,0.2); border: 3px solid #4facfe;">
-                <h3 style="font-size: 2.5em; color: #4facfe;">الساعة التالتة</h3>
-                <p style="font-size: 2em;">خطتك الشخصية</p>
+            <div class="interactive-question">
+                <div class="big-question">لما الموبايل شحنه 1%<br>وعايز تكلم حد ضروري...<br>بتحس بإيه؟</div>
             </div>
         </div>
     </div>
 
-    <!-- Slide 9: The Big Equation -->
-    <div class="slide dark-slide" data-slide="9">
-        <div class="slide-number">9 / 45</div>
-        <h1>المعادلة الكبيرة</h1>
-        <div class="equation equation-big">
-            التدفق = الطاقة × الشغف
-        </div>
-        <h2 style="margin-top: 60px; color: #FFD700;">ليه ضرب؟ مش جمع؟</h2>
-    </div>
-
-    <!-- Slide 10: Why Multiplication -->
-    <div class="slide energy-slide" data-slide="10">
-        <div class="slide-number">10 / 45</div>
-        <h2>ليه الضرب مش الجمع؟</h2>
-        <div class="formula-breakdown">
-            <div class="formula-line">
-                طاقة 10 × شغف 0 = <span class="result-zero">0</span>
-                <p style="font-size: 0.7em; opacity: 0.8; margin-top: 10px;">زي الطالب اللي صاحي بس مش عايز يذاكر</p>
+    <!-- الشريحة 5: موبايل مشحون -->
+    <div class="slide">
+        <div class="slide-counter">5 / 50</div>
+        <div class="mobile-demo">
+            <div class="phone-visual">
+                <div class="battery-indicator">
+                    <div class="battery-percentage battery-full">100%</div>
+                    <div class="battery-emotion">😎</div>
+                </div>
             </div>
-            <div class="formula-line">
-                طاقة 0 × شغف 10 = <span class="result-zero">0</span>
-                <p style="font-size: 0.7em; opacity: 0.8; margin-top: 10px;">زي اللي نفسه يلعب بس تعبان موت</p>
+            <div class="interactive-question">
+                <div class="big-question">طب لما يبقى مشحون 100%<br>والـ WiFi شغال؟</div>
             </div>
-            <div class="formula-line">
-                طاقة 5 × شغف 5 = <span class="result-good">25</span>
-                <p style="font-size: 0.7em; opacity: 0.8; margin-top: 10px;">أحسن من الاتنين! 🌟</p>
-            </div>
-        </div>
-        <p style="font-size: 2.5em; margin-top: 40px; color: #FFD700;">لازم الاتنين يبقوا موجودين!</p>
-    </div>
-
-    <!-- Slide 11: Scientific Definition -->
-    <div class="slide flow-slide" data-slide="11">
-        <div class="slide-number">11 / 45</div>
-        <h2>التعريف العلمي</h2>
-        <div class="story-box">
-            <p>عالم اسمه <span class="highlight">Mihaly Csikszentmihalyi</span></p>
-            <p style="font-size: 0.8em; opacity: 0.8;">(محدش عارف ينطقه 😅)</p>
-            <p style="margin-top: 30px;">درس <span class="highlight">30 سنة</span> عشان يفهم</p>
-            <p>ليه الناس بتبقى سعيدة وهي بتشتغل؟</p>
         </div>
     </div>
 
-    <!-- Slide 12: Flow Diagram -->
-    <div class="slide dark-slide" data-slide="12">
-        <div class="slide-number">12 / 45</div>
-        <h2>خريطة الـ Flow</h2>
-        <div class="flow-diagram">
+    <!-- الشريحة 6: كده بالظبط طاقتك -->
+    <div class="slide">
+        <div class="slide-counter">6 / 50</div>
+        <div class="flow-state-box">
+            <div class="flow-title">كده بالظبط الطاقة والشغف بتاعتك!</div>
+        </div>
+    </div>
+
+    <!-- الشريحة 7: لعبة الكور -->
+    <div class="slide">
+        <div class="slide-counter">7 / 50</div>
+        <div class="balls-game">
+            <div class="question-text" style="margin-bottom: 40px;">عايز حد يطلع معايا... مين بيحب الألعاب؟</div>
+            <div class="balls-container">
+                <div class="ball"></div>
+                <div class="ball"></div>
+                <div class="ball"></div>
+            </div>
+            <div class="timer">00:30</div>
+            <div style="font-size: 2rem; color: var(--gold-light); margin-top: 30px;">التحدي: خلي الكور دول يفضلوا في الهوا!</div>
+        </div>
+    </div>
+
+    <!-- الشريحة 8: أسئلة أثناء اللعبة -->
+    <div class="slide">
+        <div class="slide-counter">8 / 50</div>
+        <div class="interactive-question">
+            <div class="big-question">شايفين عينيه؟ 👀</div>
+            <div class="big-question" style="animation-delay: 1s;">تركيزه؟ 🎯</div>
+            <div class="big-question" style="animation-delay: 2s;">نسي الناس موجودة؟ 🌍</div>
+        </div>
+    </div>
+
+    <!-- الشريحة 9: Flow State -->
+    <div class="slide">
+        <div class="slide-counter">9 / 50</div>
+        <div class="flow-state-box">
+            <div class="flow-title">ده اسمه FLOW STATE</div>
+            <ul class="flow-points">
+                <li>الوقت بيختفي</li>
+                <li>الخوف بيختفي</li>
+                <li>الطاقة بتزيد</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- الشريحة 10: مين مر بالإحساس ده؟ -->
+    <div class="slide">
+        <div class="slide-counter">10 / 50</div>
+        <div class="interactive-question">
+            <div class="big-question">مين فينا مر بالإحساس ده قبل كده؟</div>
+            <div style="font-size: 2rem; color: var(--gold-light); margin-top: 50px;">
+                🎮 وأنا بلعب FIFA<br>
+                🎨 وأنا برسم<br>
+                📺 وأنا بتفرج على مسلسل
+            </div>
+        </div>
+    </div>
+
+    <!-- الشريحة 11: الملاحظة المهمة -->
+    <div class="slide">
+        <div class="slide-counter">11 / 50</div>
+        <div class="flow-state-box">
+            <div class="flow-title">لاحظوا حاجة؟</div>
+            <div class="flow-title" style="color: var(--sun-orange); animation-delay: 1s;">كله بيقول في الحاجات اللي بيحبها!</div>
+        </div>
+    </div>
+
+    <!-- الشريحة 12: المقارنة -->
+    <div class="slide">
+        <div class="slide-counter">12 / 50</div>
+        <div style="text-align: center;">
+            <div class="equation-example right-example">
+                <div style="font-size: 3rem; margin-bottom: 20px;">الأنشطة اللي بنحبها</div>
+                <div style="font-size: 4rem; color: var(--longing-5);">→ Flow تلقائي ✓</div>
+            </div>
+            <div class="equation-example wrong-example">
+                <div style="font-size: 3rem; margin-bottom: 20px;">الأنشطة اللي "لازم"</div>
+                <div style="font-size: 4rem; color: var(--longing-1);">→ مفيش Flow ✗</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- الشريحة 13: السؤال الكبير -->
+    <div class="slide">
+        <div class="slide-counter">13 / 50</div>
+        <div class="interactive-question">
+            <div class="big-question" style="font-size: 5rem; color: var(--gold-primary);">
+                نخلي الـ "لازم" → "عايز"<br>ازاي؟
+            </div>
+        </div>
+    </div>
+
+    <!-- الشريحة 14: أجندة الرحلة -->
+    <div class="slide">
+        <div class="slide-counter">14 / 50</div>
+        <div class="flow-state-box">
+            <div class="flow-title" style="margin-bottom: 50px;">النهاردة هنتعلم ازاي نحول:</div>
+            <div style="font-size: 3rem; line-height: 2;">
+                <div style="opacity: 0; animation: fadeInLeft 0.5s ease-out 0.5s forwards;">📚 المذاكرة من عذاب → لـ Flow</div>
+                <div style="opacity: 0; animation: fadeInLeft 0.5s ease-out 1s forwards;">💼 الشغل من ملل → لـ طاقة</div>
+                <div style="opacity: 0; animation: fadeInLeft 0.5s ease-out 1.5s forwards;">✨ الحياة من روتين → لـ شغف</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- الشريحة 15: الأجندة -->
+    <div class="slide">
+        <div class="slide-counter">15 / 50</div>
+        <div class="story-card">
+            <div class="story-title">رحلة الـ 3 ساعات</div>
+            <div style="font-size: 2.5rem; line-height: 2; margin-top: 40px;">
+                <div style="color: var(--gold-primary);">⏰ الساعة الأولى: فهم المعادلة</div>
+                <div style="color: var(--longing-6); margin: 20px 0;">⏰ الساعة التانية: بناء النظام</div>
+                <div style="color: var(--longing-5);">⏰ الساعة التالتة: خطتك الشخصية</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- الشريحة 16: الاستعداد -->
+    <div class="slide">
+        <div class="slide-counter">16 / 50</div>
+        <div class="interactive-question">
+            <div class="big-question" style="font-size: 4rem;">مين مستعد يغير حياته في 3 ساعات؟</div>
+            <div style="font-size: 8rem; margin-top: 50px;">🙋‍♂️ 🙋‍♀️</div>
+        </div>
+    </div>
+
+    <!-- الشريحة 17: القواعد -->
+    <div class="slide">
+        <div class="slide-counter">17 / 50</div>
+        <div class="flow-state-box">
+            <div class="flow-title" style="margin-bottom: 50px;">عشان ده يحصل...</div>
+            <div style="font-size: 3rem; line-height: 2.5;">
+                <div>📱 الموبايلات؟ <span style="color: var(--longing-1);">(يقفلوها)</span></div>
+                <div>🧠 العقل؟ <span style="color: var(--longing-5);">(يفتحوه)</span></div>
+                <div>⚡ الطاقة؟ <span style="color: var(--gold-primary);">(يرفعوها)</span></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- الشريحة 18: البداية -->
+    <div class="slide">
+        <div class="slide-counter">18 / 50</div>
+        <div class="flow-state-box">
+            <div class="flow-title" style="font-size: 5rem;">يلا بينا نكتشف المعادلة<br>اللي هتغير كل حاجة!</div>
+        </div>
+    </div>
+
+    <!-- الشريحة 19: المعادلة الكبيرة -->
+    <div class="slide">
+        <div class="slide-counter">19 / 50</div>
+        <div class="equation-reveal">
+            <span class="equation-part">التدفق</span>
+            <span class="equation-part">=</span>
+            <span class="equation-part">الطاقة</span>
+            <span class="equation-part">×</span>
+            <span class="equation-part">الشغف</span>
+        </div>
+    </div>
+
+    <!-- الشريحة 20: ليه ضرب؟ -->
+    <div class="slide">
+        <div class="slide-counter">20 / 50</div>
+        <div class="interactive-question">
+            <div class="big-question">خلونا نفهم حاجة مهمة...</div>
+            <div class="big-question" style="color: var(--gold-primary); margin-top: 40px;">ليه ضرب؟ مش جمع؟</div>
+        </div>
+    </div>
+
+    <!-- الشريحة 21: أمثلة المعادلة -->
+    <div class="slide">
+        <div class="slide-counter">21 / 50</div>
+        <div>
+            <div class="equation-example wrong-example">
+                طاقة 10 × شغف 0 = <span style="font-size: 4rem;">0</span><br>
+                <span style="font-size: 1.5rem; color: #aaa;">(زي الطالب اللي صاحي بس مش عايز يذاكر)</span>
+            </div>
+            <div class="equation-example wrong-example">
+                طاقة 0 × شغف 10 = <span style="font-size: 4rem;">0</span><br>
+                <span style="font-size: 1.5rem; color: #aaa;">(زي اللي نفسه يلعب بس تعبان موت)</span>
+            </div>
+            <div class="equation-example right-example">
+                طاقة 5 × شغف 5 = <span style="font-size: 4rem;">25</span><br>
+                <span style="font-size: 1.5rem; color: #aaa;">(أحسن من الاتنين!)</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- الشريحة 22: الاستنتاج -->
+    <div class="slide">
+        <div class="slide-counter">22 / 50</div>
+        <div class="flow-state-box">
+            <div class="flow-title">يعني إيه ده؟</div>
+            <div class="flow-title" style="color: var(--sun-orange); margin-top: 40px; animation-delay: 1s;">
+                لازم الاتنين يبقوا موجودين!<br>
+                مينفعش واحد من غير التاني
+            </div>
+        </div>
+    </div>
+
+    <!-- الشريحة 23: Flow State علمياً -->
+    <div class="slide">
+        <div class="slide-counter">23 / 50</div>
+        <div class="story-card">
+            <div class="story-title">FLOW STATE = حالة التدفق</div>
+            <div class="story-quote">
+                مصطلح علمي من عالم اسمه<br>
+                <span style="color: var(--gold-primary); font-size: 3rem;">Mihaly Csikszentmihalyi</span><br>
+                <span style="font-size: 1.8rem; color: #aaa;">(محدش عارف ينطقه... بس الراجل ده درس 30 سنة!)</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- الشريحة 24: رسمة التحدي والمهارة -->
+    <div class="slide">
+        <div class="slide-counter">24 / 50</div>
+        <div class="challenge-diagram">
             <div class="axis axis-x"></div>
             <div class="axis axis-y"></div>
             <div class="axis-label label-x">المهارة →</div>
             <div class="axis-label label-y">↑ التحدي</div>
-            <div class="quadrant q-anxiety">قلق 😰</div>
-            <div class="quadrant q-flow">FLOW 🌟</div>
-            <div class="quadrant q-boredom">ملل 😴</div>
-            <div class="quadrant q-relaxation">راحة 😌</div>
+            <div class="zone zone-anxiety">قلق 😰</div>
+            <div class="zone zone-flow">FLOW 🔥</div>
+            <div class="zone zone-boredom">ملل 😴</div>
+            <div class="zone zone-relaxation">راحة 😌</div>
         </div>
-        <p style="font-size: 2em; margin-top: 40px;">
-            <span class="highlight">الـ Flow بيحصل لما التحدي = المهارة</span>
-        </p>
     </div>
 
-    <!-- Slide 13: Gaming Example -->
-    <div class="slide passion-slide" data-slide="13">
-        <div class="slide-number">13 / 45</div>
-        <h2>ليه PUBG و FIFA ممتعة؟</h2>
-        <div class="comparison">
-            <div class="compare-box good">
-                <div class="compare-title">🎮 الألعاب</div>
-                <ul class="list" style="font-size: 1.5em;">
-                    <li>Level مناسب</li>
-                    <li>Feedback فوري</li>
-                    <li>تحكم كامل</li>
-                    <li>هدف واضح</li>
+    <!-- الشريحة 25: تفسير الـ Flow -->
+    <div class="slide">
+        <div class="slide-counter">25 / 50</div>
+        <div class="flow-state-box">
+            <div class="flow-title" style="margin-bottom: 50px;">الـ Flow بيحصل لما:</div>
+            <div style="font-size: 3rem; line-height: 2;">
+                <div style="color: var(--gold-primary);">التحدي = المهارة ✓</div>
+                <div style="color: var(--longing-1); margin: 20px 0;">تحدي أكبر من مهارتك = قلق ✗</div>
+                <div style="color: #6c757d;">مهارة أكبر من التحدي = ملل ✗</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- الشريحة 26: سؤال الألعاب -->
+    <div class="slide">
+        <div class="slide-counter">26 / 50</div>
+        <div class="interactive-question">
+            <div class="big-question">ليه PUBG أو FIFA ممتعة؟</div>
+            <div style="font-size: 6rem; margin-top: 50px;">🎮</div>
+        </div>
+    </div>
+
+    <!-- الشريحة 27: مقارنة الألعاب بالمذاكرة -->
+    <div class="slide">
+        <div class="slide-counter">27 / 50</div>
+        <div class="gaming-comparison">
+            <div class="comparison-card gaming-card">
+                <div class="card-title">🎮 PUBG/FIFA</div>
+                <ul class="feature-list">
+                    <li>Level مناسب (مش سهل ولا صعب)</li>
+                    <li>Feedback فوري (فوز/خسارة)</li>
+                    <li>تحكم كامل (انت اللي بتلعب)</li>
+                    <li>هدف واضح (الفوز)</li>
                 </ul>
             </div>
-            <div class="compare-box bad">
-                <div class="compare-title">📚 المذاكرة التقليدية</div>
-                <ul class="list" style="font-size: 1.5em;">
-                    <li style="text-decoration: line-through;">مش عارف انت فين</li>
-                    <li style="text-decoration: line-through;">Feedback بعد شهور</li>
-                    <li style="text-decoration: line-through;">حد تاني بيتحكم</li>
-                    <li style="text-decoration: line-through;">الهدف مش واضح</li>
+            <div class="comparison-card study-card">
+                <div class="card-title">📚 المذاكرة التقليدية</div>
+                <ul class="feature-list">
+                    <li>مش عارف انت فين (no levels)</li>
+                    <li>Feedback بعد شهور (الامتحان)</li>
+                    <li>حد تاني بيتحكم (المدرس)</li>
+                    <li>الهدف مش واضح (النجاح؟ التفوق؟)</li>
                 </ul>
             </div>
         </div>
-        <h2 style="margin-top: 60px; color: #FFD700;">طب لو خلينا المذاكرة زي اللعبة؟ 🎯</h2>
     </div>
 
-    <!-- Slide 14: Challenge Activity -->
-    <div class="slide dark-slide" data-slide="14">
-        <div class="slide-number">14 / 45</div>
-        <h2>تجربة عملية: التحدي المناسب</h2>
-        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; margin: 60px auto; max-width: 1200px;">
-            <div class="activity-box" style="border: 3px solid #ff4444;">
-                <h3 style="color: #ff4444; font-size: 2em;">صعب جداً</h3>
-                <p style="font-size: 1.5em;">مسألة رياضيات معقدة</p>
-                <p style="font-size: 3em; margin: 20px 0;">😰</p>
-                <p style="color: #ff4444;">= توتر</p>
-            </div>
-            <div class="activity-box" style="border: 3px solid #888;">
-                <h3 style="color: #888; font-size: 2em;">سهل جداً</h3>
-                <p style="font-size: 1.5em;">اكتب الحروف الأبجدية</p>
-                <p style="font-size: 3em; margin: 20px 0;">😴</p>
-                <p style="color: #888;">= ملل</p>
-            </div>
-            <div class="activity-box" style="border: 3px solid #00ff88;">
-                <h3 style="color: #00ff88; font-size: 2em;">مناسب تماماً</h3>
-                <p style="font-size: 1.5em;">20 حيوان في 60 ثانية</p>
-                <p style="font-size: 3em; margin: 20px 0;">🌟</p>
-                <p style="color: #00ff88;">= FLOW!</p>
+    <!-- الشريحة 28: السؤال المهم -->
+    <div class="slide">
+        <div class="slide-counter">28 / 50</div>
+        <div class="interactive-question">
+            <div class="big-question" style="font-size: 5rem; color: var(--gold-primary);">
+                طب لو خلينا المذاكرة زي اللعبة؟
             </div>
         </div>
     </div>
 
-    <!-- Slide 15: Life Equations -->
-    <div class="slide energy-slide" data-slide="15">
-        <div class="slide-number">15 / 45</div>
-        <h2>معادلات الحياة</h2>
-        <div class="comparison">
-            <div class="compare-box bad">
-                <div class="compare-title">معادلة الحياة البائسة 😔</div>
-                <div style="font-size: 1.8em; line-height: 2;">
-                    <p>طاقة بدون شغف = <span style="color: #ff4444;">إحباط</span></p>
-                    <p>شغف بدون طاقة = <span style="color: #ff4444;">أحلام</span></p>
+    <!-- الشريحة 29: نشاط المجموعات -->
+    <div class="slide">
+        <div class="slide-counter">29 / 50</div>
+        <div class="activity-container">
+            <div class="activity-card">
+                <div class="group-number">المجموعة 1</div>
+                <div class="activity-task">حلوا المسألة دي<br>(مسألة رياضيات صعبة)</div>
+            </div>
+            <div class="activity-card">
+                <div class="group-number">المجموعة 2</div>
+                <div class="activity-task">اكتبوا الحروف الأبجدية<br>(سهلة جداً)</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- الشريحة 30: النتيجة -->
+    <div class="slide">
+        <div class="slide-counter">30 / 50</div>
+        <div class="flow-state-box">
+            <div style="font-size: 2.5rem; line-height: 2;">
+                <div style="color: var(--longing-1);">المجموعة 1: توتر (صعب زيادة) 😰</div>
+                <div style="color: #6c757d; margin: 20px 0;">المجموعة 2: ملل (سهل زيادة) 😴</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- الشريحة 31: التحدي المناسب -->
+    <div class="slide">
+        <div class="slide-counter">31 / 50</div>
+        <div class="activity-card" style="max-width: 600px; margin: 0 auto;">
+            <div class="group-number">التحدي المناسب</div>
+            <div class="activity-task">اكتبوا أسماء 20 حيوان بالإنجليزي<br>في 60 ثانية</div>
+            <div class="timer" style="margin-top: 40px;">01:00</div>
+        </div>
+    </div>
+
+    <!-- الشريحة 32: شوفوا التركيز -->
+    <div class="slide">
+        <div class="slide-counter">32 / 50</div>
+        <div class="flow-state-box">
+            <div class="flow-title" style="font-size: 5rem;">شوفوا التركيز!</div>
+            <div class="flow-title" style="color: var(--sun-orange); margin-top: 40px;">ده الـ Flow! 🔥</div>
+        </div>
+    </div>
+
+    <!-- الشريحة 33: معادلة الحياة -->
+    <div class="slide">
+        <div class="slide-counter">33 / 50</div>
+        <div style="text-align: center;">
+            <div class="equation-example wrong-example" style="margin-bottom: 40px;">
+                <div style="font-size: 2.5rem; font-weight: 700; margin-bottom: 20px;">معادلة الحياة البائسة:</div>
+                <div style="font-size: 2rem;">طاقة بدون شغف = إحباط 😔</div>
+                <div style="font-size: 2rem; margin-top: 15px;">شغف بدون طاقة = أحلام 💭</div>
+            </div>
+            <div class="equation-example right-example">
+                <div style="font-size: 2.5rem; font-weight: 700; margin-bottom: 20px;">معادلة الحياة المتدفقة:</div>
+                <div style="font-size: 2.5rem; color: var(--longing-5);">طاقة × شغف = إنجاز ✨</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- الشريحة 34: الـ Flow مش حظ -->
+    <div class="slide">
+        <div class="slide-counter">34 / 50</div>
+        <div class="final-formula">
+            <div class="formula-text">الـ Flow مش حاجة للمحظوظين...</div>
+            <div class="formula-subtitle" style="margin-top: 40px;">ده علم! 🧬</div>
+            <div style="font-size: 3rem; color: var(--gold-light); margin-top: 30px;">وانت دلوقتي هتتعلم تشغله!</div>
+        </div>
+    </div>
+
+    <!-- الشريحة 35: سؤال الطاقة -->
+    <div class="slide">
+        <div class="slide-counter">35 / 50</div>
+        <div class="interactive-question">
+            <div class="big-question">مين عايز يعرف ازاي يرفع طاقته؟</div>
+            <div style="font-size: 8rem; margin-top: 50px;">⚡</div>
+        </div>
+    </div>
+
+    <!-- الشريحة 36: معادلة الطاقة -->
+    <div class="slide">
+        <div class="slide-counter">36 / 50</div>
+        <div class="energy-equation">
+            <div class="equation-line">الطاقة = (النوم + التغذية + الحركة) - (الاستنزاف العقلي)</div>
+            <div class="equation-line" style="color: var(--gold-primary); font-size: 2.5rem;">E = (S + N + M) - MD</div>
+            <div class="sub-equation">الاستنزاف العقلي = (القرارات × 50) + (السوشيال ميديا × 100) + (المقارنات × 200)</div>
+        </div>
+    </div>
+
+    <!-- الشريحة 37: صدمة القرارات -->
+    <div class="slide">
+        <div class="slide-counter">37 / 50</div>
+        <div class="story-card">
+            <div class="story-title" style="color: var(--longing-1);">تعرفوا إن كل قرار بتاخدوه بياكل من طاقتك؟</div>
+            <div class="decision-list">
+                <div class="decision-item">
+                    <span>تلبس إيه؟</span>
+                    <span class="energy-cost">-2%</span>
+                </div>
+                <div class="decision-item">
+                    <span>تفطر إيه؟</span>
+                    <span class="energy-cost">-2%</span>
+                </div>
+                <div class="decision-item">
+                    <span>تبدأ بإيه؟</span>
+                    <span class="energy-cost">-2%</span>
                 </div>
             </div>
-            <div class="compare-box good">
-                <div class="compare-title">معادلة الحياة المتدفقة 🚀</div>
-                <div style="font-size: 1.8em; line-height: 2;">
-                    <p>طاقة × شغف = <span style="color: #00ff88;">إنجاز</span></p>
-                    <p>FLOW = <span style="color: #00ff88;">النجاح</span></p>
+            <div style="font-size: 3rem; color: var(--longing-1); text-align: center; margin-top: 40px;">
+                50 قرار في اليوم = 100% طاقة راحت! 😱
+            </div>
+        </div>
+    </div>
+
+    <!-- الشريحة 38: تجربة البطارية البشرية -->
+    <div class="slide">
+        <div class="slide-counter">38 / 50</div>
+        <div class="interactive-question">
+            <div class="big-question">تعالوا نحسب طاقتكم دلوقتي!</div>
+            <div style="font-size: 3rem; color: var(--gold-light); margin-top: 40px;">كل واحد يتخيل نفسه بطارية موبايل 🔋</div>
+        </div>
+    </div>
+
+    <!-- الشريحة 39: أسئلة الطاقة -->
+    <div class="slide">
+        <div class="slide-counter">39 / 50</div>
+        <div class="break-challenge">
+            <div class="challenge-title">كل إجابة بنعم = اقعد</div>
+            <ul class="challenge-steps">
+                <li data-number="1">نمت أقل من 7 ساعات؟</li>
+                <li data-number="2">فتحت السوشيال قبل ما تيجي؟</li>
+                <li data-number="3">مفطرتش أو شربت مشروب طاقة؟</li>
+                <li data-number="4">قارنت نفسك بحد النهاردة؟</li>
+                <li data-number="5">حاسس بضغط من حد؟</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- الشريحة 40: النتيجة -->
+    <div class="slide">
+        <div class="slide-counter">40 / 50</div>
+        <div class="battery-visual">
+            <div class="battery-fill" style="height: 30%;">30%</div>
+        </div>
+        <div style="text-align: center; font-size: 2.5rem; margin-top: 30px;">
+            <div style="color: var(--longing-1);">اللي قاعدين = بطاريتهم أقل من 50%</div>
+            <div style="color: var(--longing-5); margin-top: 20px;">اللي واقفين = عندهم طاقة... بس لسه!</div>
+        </div>
+    </div>
+
+    <!-- الشريحة 41: قصة ستيف جوبز -->
+    <div class="slide">
+        <div class="slide-counter">41 / 50</div>
+        <div class="story-card">
+            <div class="story-title">ستيف جوبز كان بيلبس نفس اللبس كل يوم... ليه؟</div>
+            <div class="story-image">👔</div>
+            <div class="story-quote">Decision Fatigue = إرهاق القرارات</div>
+        </div>
+    </div>
+
+    <!-- الشريحة 42: أمثلة المشاهير -->
+    <div class="slide">
+        <div class="slide-counter">42 / 50</div>
+        <div style="text-align: center;">
+            <div style="font-size: 3rem; color: var(--gold-primary); margin-bottom: 40px;">القرارات الأقل = طاقة أكتر</div>
+            <div class="decision-list">
+                <div class="decision-item" style="border-left-color: var(--longing-5);">
+                    <span>جوبز: قميص أسود + جينز</span>
+                    <span style="color: var(--longing-5);">0 قرارات</span>
+                </div>
+                <div class="decision-item" style="border-left-color: var(--longing-6);">
+                    <span>زوكربيرج: تيشيرت رمادي</span>
+                    <span style="color: var(--longing-6);">0 قرارات</span>
+                </div>
+                <div class="decision-item" style="border-left-color: var(--longing-4);">
+                    <span>أوباما: بدلتين بس</span>
+                    <span style="color: var(--longing-4);">قرار واحد</span>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Slide 16: Energy Deep Dive -->
-    <div class="slide dark-slide" data-slide="16">
-        <div class="slide-number">16 / 45</div>
-        <h1 style="color: #FFD700;">تفكيك الطاقة</h1>
-        <h2>فين طاقتك؟</h2>
-        <div class="equation" style="margin-top: 60px;">
-            الطاقة = (النوم + التغذية + الحركة) - الاستنزاف العقلي
-        </div>
-    </div>
-
-    <!-- Slide 17: Mental Drain -->
-    <div class="slide energy-slide" data-slide="17">
-        <div class="slide-number">17 / 45</div>
-        <h2>الاستنزاف العقلي الصامت</h2>
-        <div class="equation" style="background: rgba(255,68,68,0.2); border-color: #ff4444;">
-            الاستنزاف = (القرارات×50) + (السوشيال×100) + (المقارنات×200)
-        </div>
-        <div style="margin-top: 60px; font-size: 2em; line-height: 1.8;">
-            <p>كل قرار بياكل من طاقتك:</p>
-            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; margin-top: 40px;">
-                <div class="activity-box">
-                    <p>تلبس إيه؟</p>
-                    <p style="color: #ff4444; font-size: 1.5em;">-2%</p>
-                </div>
-                <div class="activity-box">
-                    <p>تفطر إيه؟</p>
-                    <p style="color: #ff4444; font-size: 1.5em;">-2%</p>
-                </div>
-                <div class="activity-box">
-                    <p>تبدأ بإيه؟</p>
-                    <p style="color: #ff4444; font-size: 1.5em;">-2%</p>
-                </div>
+    <!-- الشريحة 43: الحل -->
+    <div class="slide">
+        <div class="slide-counter">43 / 50</div>
+        <div class="flow-state-box">
+            <div class="flow-title" style="margin-bottom: 40px;">مش معناه تلبس زيهم...</div>
+            <div style="font-size: 3rem; line-height: 2;">
+                <div style="color: var(--gold-primary);">Morning Routine = طاقة محفوظة</div>
+                <div style="color: var(--longing-6);">قرارات أقل = طاقة أكتر</div>
+                <div style="color: var(--longing-5);">عادات ثابتة = بطارية مشحونة</div>
             </div>
         </div>
-        <p style="font-size: 2.5em; margin-top: 60px; color: #ff4444;">
-            50 قرار × 2% = 100% طاقة راحت! 😱
-        </p>
     </div>
 
-    <!-- Slide 18: Human Battery Test -->
-    <div class="slide flow-slide" data-slide="18">
-        <div class="slide-number">18 / 45</div>
-        <h2>نشاط: تجربة البطارية البشرية</h2>
-        <div style="font-size: 10em; margin: 40px 0;">🔋</div>
-        <div class="activity-box">
-            <h3 style="font-size: 2.5em; margin-bottom: 30px;">احسب بطاريتك!</h3>
-            <div style="font-size: 1.8em; line-height: 2; text-align: right;">
-                <p>✓ نمت أقل من 7 ساعات؟ <span style="color: #ff4444;">(-30%)</span></p>
-                <p>✓ فتحت السوشيال قبل ما تيجي؟ <span style="color: #ff4444;">(-40%)</span></p>
-                <p>✓ مفطرتش؟ <span style="color: #ff4444;">(-20%)</span></p>
-                <p>✓ قارنت نفسك بحد؟ <span style="color: #ff4444;">(-30%)</span></p>
-                <p>✓ حاسس بضغط؟ <span style="color: #ff4444;">(-25%)</span></p>
-            </div>
-        </div>
-        <p style="font-size: 2.5em; margin-top: 40px;">النتيجة: أغلبكم في السالب! 🔴</p>
-    </div>
-
-    <!-- Slide 19: Steve Jobs Story -->
-    <div class="slide dark-slide" data-slide="19">
-        <div class="slide-number">19 / 45</div>
-        <h2>قصة ستيف جوبز</h2>
-        <div class="story-box">
-            <p style="font-size: 1.2em;">🍎 <span class="highlight">ستيف جوبز</span> كان بيلبس نفس اللبس كل يوم</p>
-            <p style="margin-top: 30px;">قميص أسود + جينز = <span class="highlight">0 قرارات</span></p>
-            <p style="margin-top: 30px;">👔 <span class="highlight">زوكربيرج:</span> تيشيرت رمادي</p>
-            <p>🤵 <span class="highlight">أوباما:</span> بدلتين بس</p>
-        </div>
-        <div class="equation" style="margin-top: 60px;">
-            Decision Fatigue = إرهاق القرارات
-        </div>
-        <p style="font-size: 2em; margin-top: 40px;">
-            الحل: <span class="highlight">قلل القرارات الغير مهمة</span>
-        </p>
-    </div>
-
-    <!-- Slide 20: Energy Bank -->
-    <div class="slide energy-slide" data-slide="20">
-        <div class="slide-number">20 / 45</div>
-        <h2>بنك الطاقة</h2>
+    <!-- الشريحة 44: بنك الطاقة -->
+    <div class="slide">
+        <div class="slide-counter">44 / 50</div>
         <div class="energy-bank">
-            <div class="bank-section deposits">
-                <div class="bank-title">إيداعات الطاقة 💚</div>
+            <div class="bank-column deposits">
+                <div class="bank-title">إيداعات الطاقة (+)</div>
                 <div class="bank-item">
                     <span>نوم 8 ساعات</span>
-                    <span class="percentage">+30%</span>
+                    <span class="bank-value">+30%</span>
                 </div>
                 <div class="bank-item">
                     <span>فطار صحي</span>
-                    <span class="percentage">+20%</span>
+                    <span class="bank-value">+20%</span>
                 </div>
                 <div class="bank-item">
                     <span>رياضة 10 دقائق</span>
-                    <span class="percentage">+15%</span>
+                    <span class="bank-value">+15%</span>
                 </div>
                 <div class="bank-item">
                     <span>تنفس عميق</span>
-                    <span class="percentage">+10%</span>
+                    <span class="bank-value">+10%</span>
                 </div>
                 <div class="bank-item">
                     <span>قيلولة 20 دقيقة</span>
-                    <span class="percentage">+25%</span>
+                    <span class="bank-value">+25%</span>
                 </div>
             </div>
-            <div class="bank-section withdrawals">
-                <div class="bank-title">سحوبات الطاقة 🔴</div>
+            <div class="bank-column withdrawals">
+                <div class="bank-title">سحوبات الطاقة (-)</div>
                 <div class="bank-item">
                     <span>سوشيال ميديا ساعة</span>
-                    <span class="percentage">-40%</span>
+                    <span class="bank-value">-40%</span>
                 </div>
                 <div class="bank-item">
                     <span>مقارنة بالآخرين</span>
-                    <span class="percentage">-30%</span>
+                    <span class="bank-value">-30%</span>
                 </div>
                 <div class="bank-item">
                     <span>سهر بالليل</span>
-                    <span class="percentage">-20%</span>
+                    <span class="bank-value">-20%</span>
                 </div>
                 <div class="bank-item">
                     <span>سكر زيادة</span>
-                    <span class="percentage">-25%</span>
+                    <span class="bank-value">-25%</span>
                 </div>
                 <div class="bank-item">
                     <span>دوامة التفكير</span>
-                    <span class="percentage">-35%</span>
+                    <span class="bank-value">-35%</span>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Slide 21: Personal Energy Workshop -->
-    <div class="slide flow-slide" data-slide="21">
-        <div class="slide-number">21 / 45</div>
-        <h2>ورشة: احسب طاقتك الشخصية</h2>
-        <div class="activity-box" style="max-width: 800px;">
-            <table style="width: 100%; font-size: 1.8em; line-height: 2;">
-                <tr>
-                    <td>صحيت امتى؟</td>
-                    <td>_____ (8+ ساعات = +30)</td>
-                </tr>
-                <tr>
-                    <td>فطرت؟</td>
-                    <td>_____ (أيوة = +20)</td>
-                </tr>
-                <tr>
-                    <td>رياضة؟</td>
-                    <td>_____ (أيوة = +15)</td>
-                </tr>
-                <tr>
-                    <td>سوشيال؟</td>
-                    <td>_____ (كل ساعة = -40)</td>
-                </tr>
-                <tr>
-                    <td>قارنت نفسك؟</td>
-                    <td>_____ (كل مرة = -30)</td>
-                </tr>
-                <tr style="background: rgba(255,215,0,0.2); font-weight: 700;">
-                    <td>المجموع</td>
-                    <td>_____ %</td>
-                </tr>
-            </table>
-        </div>
-        <p style="font-size: 2.5em; margin-top: 40px; color: #FFD700;">
-            تخيل لو طاقتك 100% كل يوم؟ 🚀
-        </p>
-    </div>
-
-    <!-- Slide 22: Energy Summary -->
-    <div class="slide dark-slide" data-slide="22">
-        <div class="slide-number">22 / 45</div>
-        <h2>خلاصة الطاقة</h2>
-        <div class="equation equation-big">
-            التدفق = الطاقة × الشغف
-        </div>
-        <div style="margin-top: 60px; font-size: 2.5em; line-height: 1.8;">
-            <p>لو الطاقة = <span style="color: #ff4444;">20%</span></p>
-            <p>حتى لو الشغف = <span style="color: #00ff88;">100%</span></p>
-            <p>النتيجة = <span style="color: #FFD700; font-size: 1.5em;">20% بس!</span></p>
-        </div>
-        <h2 style="margin-top: 60px; color: #FFD700;">
-            الطاقة مش ترف... ده أساس!
-        </h2>
-    </div>
-
-    <!-- Slide 23: Passion Introduction -->
-    <div class="slide passion-slide" data-slide="23">
-        <div class="slide-number">23 / 45</div>
-        <h1>تفكيك الشغف</h1>
-        <h2 style="margin-top: 40px;">أكبر كذبة في حياتنا...</h2>
-        <p style="font-size: 3em; margin-top: 60px; color: #ff4444;">
-            "الشغف هدية ربانية لناس محظوظة!"
-        </p>
-        <p style="font-size: 4em; margin-top: 60px; color: #00ff88; font-weight: 700;">
-            ❌ غلط!
-        </p>
-    </div>
-
-    <!-- Slide 24: Passion Equation -->
-    <div class="slide dark-slide" data-slide="24">
-        <div class="slide-number">24 / 45</div>
-        <h2>معادلة الشغف العلمية</h2>
-        <div class="equation" style="font-size: 2.5em;">
-            الشغف = (التقدم المرئي × الفضول) ÷ الخوف من الحكم
-        </div>
-        <div style="margin-top: 60px; font-size: 2em; line-height: 2;">
-            <p><span class="highlight">التقدم المرئي</span> = شايف نفسك بتتحسن</p>
-            <p><span class="highlight">الفضول</span> = عايز تعرف إيه اللي جاي</p>
-            <p><span class="highlight">الخوف من الحكم</span> = قلقان الناس تقول إيه</p>
-        </div>
-    </div>
-
-    <!-- Slide 25: Passion Experiment -->
-    <div class="slide flow-slide" data-slide="25">
-        <div class="slide-number">25 / 45</div>
-        <h2>تجربة الشغف المباشر</h2>
-        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; margin: 60px auto; max-width: 1200px;">
-            <div class="activity-box">
-                <h3 style="color: #888; font-size: 2em;">مجموعة 1</h3>
-                <p style="font-size: 1.5em;">"ارسموا أي حاجة"</p>
-                <p style="font-size: 1.2em; margin-top: 20px;">مفيش تقدم مرئي</p>
-                <p style="font-size: 2em; color: #888;">= شغف ضعيف 😐</p>
+    <!-- الشريحة 45: احسب طاقتك -->
+    <div class="slide">
+        <div class="slide-counter">45 / 50</div>
+        <div class="calculator-card">
+            <div class="calc-title">ورشة الطاقة الشخصية</div>
+            <div class="calc-item">
+                <span>صحيت امتى؟</span>
+                <span>_____ (8+ ساعات = +30)</span>
             </div>
-            <div class="activity-box">
-                <h3 style="color: #ff4444; font-size: 2em;">مجموعة 2</h3>
-                <p style="font-size: 1.5em;">"ارسموا وهنحط درجات"</p>
-                <p style="font-size: 1.2em; margin-top: 20px;">خوف من الحكم</p>
-                <p style="font-size: 2em; color: #ff4444;">= شغف ميت 😰</p>
+            <div class="calc-item">
+                <span>فطرت؟</span>
+                <span>_____ (أيوة = +20)</span>
             </div>
-            <div class="activity-box">
-                <h3 style="color: #00ff88; font-size: 2em;">مجموعة 3</h3>
-                <p style="font-size: 1.5em;">"كل stroke هتشوفوا تحسن"</p>
-                <p style="font-size: 1.2em; margin-top: 20px;">تقدم + لا حكم</p>
-                <p style="font-size: 2em; color: #00ff88;">= شغف عالي! 🌟</p>
+            <div class="calc-item">
+                <span>رياضة؟</span>
+                <span>_____ (أيوة = +15)</span>
+            </div>
+            <div class="calc-item">
+                <span>سوشيال؟</span>
+                <span>_____ (كل ساعة = -40)</span>
+            </div>
+            <div class="calc-item">
+                <span>قارنت نفسك؟</span>
+                <span>_____ (كل مرة = -30)</span>
+            </div>
+            <div class="calc-result">المجموع = _____ %</div>
+        </div>
+    </div>
+
+    <!-- الشريحة 46: النتائج المتوقعة -->
+    <div class="slide">
+        <div class="slide-counter">46 / 50</div>
+        <div class="interactive-question">
+            <div style="font-size: 3rem; line-height: 2;">
+                <div style="color: var(--longing-1);">مين طلع في السالب؟ (أغلبهم)</div>
+                <div style="color: var(--longing-3); margin: 20px 0;">مين فوق 50%؟ (قليل)</div>
+                <div style="color: var(--longing-5);">مين فوق 80%؟ (نادر)</div>
+            </div>
+            <div class="big-question" style="margin-top: 50px; color: var(--gold-primary);">طب تخيلوا لو طاقتك 100% كل يوم؟</div>
+        </div>
+    </div>
+
+    <!-- الشريحة 47: الخلاصة -->
+    <div class="slide">
+        <div class="slide-counter">47 / 50</div>
+        <div class="final-formula">
+            <div style="font-size: 3rem; margin-bottom: 40px;">
+                <div>التدفق = الطاقة × الشغف</div>
+                <div style="color: var(--longing-1); margin-top: 20px;">لو الطاقة = 20%</div>
+                <div style="color: var(--longing-3);">حتى لو الشغف = 100%</div>
+                <div style="color: var(--longing-1); font-size: 4rem; margin-top: 20px;">النتيجة = 20% بس!</div>
+            </div>
+            <div class="formula-subtitle">الطاقة مش ترف... ده أساس!</div>
+            <div style="font-size: 2.5rem; color: var(--gold-light); margin-top: 20px;">No Energy = No Flow</div>
+        </div>
+    </div>
+
+    <!-- الشريحة 48: سؤال الشغف -->
+    <div class="slide">
+        <div class="slide-counter">48 / 50</div>
+        <div class="interactive-question">
+            <div class="big-question">طب لو الطاقة موجودة...</div>
+            <div class="big-question" style="color: var(--gold-primary); margin-top: 40px; font-size: 5rem;">الشغف ييجي منين؟</div>
+        </div>
+    </div>
+
+    <!-- الشريحة 49: Break -->
+    <div class="slide">
+        <div class="slide-counter">49 / 50</div>
+        <div class="break-challenge">
+            <div class="challenge-title">Break تفاعلي - 5 دقائق</div>
+            <div style="font-size: 3rem; color: var(--gold-primary); margin: 40px 0;">التحدي:</div>
+            <ul class="challenge-steps">
+                <li data-number="1">اختار مهمة مملة عندك</li>
+                <li data-number="2">اعملها progress bar</li>
+                <li data-number="3">اديها نقط/levels</li>
+                <li data-number="4">خليها لعبة مع نفسك</li>
+            </ul>
+            <div class="break-timer">5:00</div>
+        </div>
+    </div>
+
+    <!-- الشريحة 50: النهاية -->
+    <div class="slide">
+        <div class="slide-counter">50 / 50</div>
+        <div class="final-formula">
+            <div class="formula-text">لما نرجع...</div>
+            <div class="formula-subtitle" style="margin-top: 40px;">هندخل في العمق! 🚀</div>
+            <div style="font-size: 2.5rem; color: var(--gold-light); margin-top: 40px;">
+                خدوا 5 دقائق...<br>
+                فكروا، اتحركوا، اشربوا مياه
             </div>
         </div>
     </div>
 
-    <!-- Slide 26: Netflix Algorithm -->
-    <div class="slide dark-slide" data-slide="26">
-        <div class="slide-number">26 / 45</div>
-        <h2>سر Netflix</h2>
-        <div class="netflix-box">
-            <div class="netflix-title">NETFLIX</div>
-            <div style="font-size: 1.8em; line-height: 2; margin-top: 30px;">
-                <p>1️⃣ "Previously on..." → ترجيع سريع <span style="color: #00ff88;">(تقدم)</span></p>
-                <p>2️⃣ Episode 3 of 10 → شايف انت فين <span style="color: #00ff88;">(مرئي)</span></p>
-                <p>3️⃣ "Next episode in 5..." → الفضول <span style="color: #00ff88;">(إيه اللي جاي)</span></p>
-                <p>4️⃣ No one judging → مفيش حكم <span style="color: #00ff88;">(براحتك)</span></p>
-            </div>
-            <p style="font-size: 3em; margin-top: 40px; color: #e50914;">= بتقعد 8 ساعات! 📺</p>
-        </div>
-    </div>
-
-    <!-- Slide 27: Study vs Netflix -->
-    <div class="slide passion-slide" data-slide="27">
-        <div class="slide-number">27 / 45</div>
-        <h2>المقارنة الصادمة</h2>
-        <div class="comparison">
-            <div class="compare-box good">
-                <div class="compare-title">📺 Netflix</div>
-                <ul class="list" style="font-size: 1.5em;">
-                    <li>عارف وصلت فين ✓</li>
-                    <li>شايف تقدمك ✓</li>
-                    <li>متشوق للجاي ✓</li>
-                    <li>محدش بيحكم ✓</li>
-                </ul>
-                <p style="font-size: 2em; margin-top: 30px; color: #00ff88;">= 8 ساعات!</p>
-            </div>
-            <div class="compare-box bad">
-                <div class="compare-title">📚 المذاكرة</div>
-                <ul class="list" style="font-size: 1.5em;">
-                    <li>مش عارف وصلت فين ✗</li>
-                    <li>مش شايف تقدم ✗</li>
-                    <li>مش متشوق ✗</li>
-                    <li>كله بيحكم ✗</li>
-                </ul>
-                <p style="font-size: 2em; margin-top: 30px; color: #ff4444;">= 8 دقائق!</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Slide 28: Pokemon Story -->
-    <div class="slide flow-slide" data-slide="28">
-        <div class="slide-number">28 / 45</div>
-        <h2>قصة الياباني الفاشل</h2>
-        <div class="story-box">
-            <p><span class="highlight">Satoshi Tajiri</span></p>
-            <p style="font-size: 0.9em; margin-top: 20px;">طفل فاشل دراسياً 📚❌</p>
-            <p style="font-size: 0.9em;">مهووس بجمع الحشرات 🐛</p>
-            <p style="font-size: 0.9em;">المدرسين: "ملوش مستقبل" 😔</p>
-            <p style="margin-top: 40px; font-size: 1.2em;">لكن...</p>
-            <p style="font-size: 1.5em; color: #FFD700;">حول هوسه لـ Pokemon! ⚡</p>
-        </div>
-        <div style="margin-top: 40px; font-size: 2em;">
-            <p>✓ كل pokemon = تقدم مرئي</p>
-            <p>✓ عالم مفتوح = فضول لا نهائي</p>
-            <p>✓ مفيش فشل = مفيش حكم</p>
-        </div>
-        <p style="font-size: 2.5em; margin-top: 40px; color: #FFD700;">
-            = أكبر franchise في التاريخ! 🏆
-        </p>
-    </div>
-
-    <!-- Slide 29: The Lesson -->
-    <div class="slide dark-slide" data-slide="29">
-        <div class="slide-number">29 / 45</div>
-        <h1 style="color: #FFD700;">الدرس المهم</h1>
-        <div class="equation equation-big" style="margin-top: 60px;">
-            الشغف مش في الموضوع...
-        </div>
-        <div class="equation equation-big" style="margin-top: 40px; color: #00ff88;">
-            الشغف في الطريقة!
-        </div>
-    </div>
-
-    <!-- Slide 30: Passion Mapping Workshop -->
-    <div class="slide passion-slide" data-slide="30">
-        <div class="slide-number">30 / 45</div>
-        <h2>ورشة: خريطة الشغف</h2>
-        <div style="display: flex; justify-content: center; align-items: center; margin: 60px 0;">
-            <div style="position: relative;">
-                <div style="width: 500px; height: 500px; border: 4px solid #FFD700; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(255,215,0,0.1);">
-                    <div style="width: 350px; height: 350px; border: 4px solid #00ff88; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(0,255,136,0.1);">
-                        <div style="width: 200px; height: 200px; border: 4px solid #4facfe; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(79,172,254,0.1);">
-                            <p style="font-size: 1.5em;">FIFA 🎮</p>
-                        </div>
-                    </div>
-                </div>
-                <p style="position: absolute; top: -40px; left: 50%; transform: translateX(-50%); font-size: 1.8em; color: #FFD700;">ازاي تطبق نفس المعايير؟</p>
-                <p style="position: absolute; bottom: -40px; left: 50%; transform: translateX(-50%); font-size: 1.8em; color: #4facfe;">حاجة بتحبها</p>
-                <p style="position: absolute; left: -150px; top: 50%; transform: translateY(-50%); font-size: 1.8em; color: #00ff88;">ليه بتحبها؟</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Slide 31: Passion Example -->
-    <div class="slide flow-slide" data-slide="31">
-        <div class="slide-number">31 / 45</div>
-        <h2>مثال عملي</h2>
-        <div class="activity-box" style="max-width: 900px;">
-            <div style="font-size: 2em; line-height: 2;">
-                <p><span class="highlight">اللعبة:</span> FIFA ⚽</p>
-                <p><span class="highlight">ليه بحبها:</span> تحدي + تقدم + متعة</p>
-                <p><span class="highlight">التطبيق:</span></p>
-                <div style="background: rgba(255,215,0,0.2); padding: 30px; border-radius: 20px; margin-top: 20px;">
-                    <p>أخلي المذاكرة:</p>
-                    <p>✓ مباراة مع نفسي</p>
-                    <p>✓ Levels واضحة</p>
-                    <p>✓ Achievements</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Slide 32: Final Formula -->
-    <div class="slide dark-slide" data-slide="32">
-        <div class="slide-number">32 / 45</div>
-        <h1>الـ Formula النهائية</h1>
-        <div class="equation equation-big" style="margin-top: 60px;">
-            التدفق = الطاقة × الشغف
-        </div>
-        <div style="margin-top: 60px; font-size: 2.5em;">
-            <p>الطاقة <span style="color: #00ff88;">(عرفنا نجيبها) ✓</span></p>
-            <p>الشغف <span style="color: #00ff88;">(عرفنا نصنعه) ✓</span></p>
-        </div>
-    </div>
-
-    <!-- Slide 33: Passion is Engineered -->
-    <div class="slide passion-slide" data-slide="33">
-        <div class="slide-number">33 / 45</div>
-        <h1 style="font-size: 4em;">PASSION IS</h1>
-        <h1 style="font-size: 5em; color: #00ff88;">ENGINEERED</h1>
-        <h1 style="font-size: 3em;">NOT INHERITED</h1>
-        <div class="equation equation-big" style="margin-top: 60px;">
-            الشغف بيتصنع مش بيتولد
-        </div>
-    </div>
-
-    <!-- Slide 34: Passion Formula Summary -->
-    <div class="slide dark-slide" data-slide="34">
-        <div class="slide-number">34 / 45</div>
-        <h2>معادلة صناعة الشغف</h2>
-        <div class="equation" style="font-size: 2.5em; margin-top: 60px;">
-            شغف = رؤية تقدمك + فضول للجديد - خوف من الفشل
-        </div>
-        <div style="margin-top: 60px; font-size: 2.5em; line-height: 1.8;">
-            <p>يعني إيه ده؟</p>
-            <p style="font-size: 3em; color: #FFD700; margin-top: 30px;">
-                الشغف مش FEELING... ده SYSTEM!
-            </p>
-        </div>
-    </div>
-
-    <!-- Slide 35: Break Challenge -->
-    <div class="slide flow-slide" data-slide="35">
-        <div class="slide-number">35 / 45</div>
-        <h2>تحدي الـ Break</h2>
-        <div class="activity-box" style="max-width: 900px;">
-            <h3 style="font-size: 2.5em; color: #FFD700; margin-bottom: 30px;">قبل ما ناخد break...</h3>
-            <p style="font-size: 2em; margin-bottom: 40px;">اختار مهمة مملة عندك وطبق عليها واحد من:</p>
-            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px;">
-                <div style="background: rgba(255,215,0,0.2); padding: 30px; border-radius: 20px;">
-                    <p style="font-size: 3em;">📊</p>
-                    <p style="font-size: 1.5em;">Progress Bar</p>
-                </div>
-                <div style="background: rgba(0,255,136,0.2); padding: 30px; border-radius: 20px;">
-                    <p style="font-size: 3em;">🎯</p>
-                    <p style="font-size: 1.5em;">نقط/Levels</p>
-                </div>
-                <div style="background: rgba(79,172,254,0.2); padding: 30px; border-radius: 20px;">
-                    <p style="font-size: 3em;">🎮</p>
-                    <p style="font-size: 1.5em;">لعبة مع نفسك</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Slide 36: Break Example -->
-    <div class="slide dark-slide" data-slide="36">
-        <div class="slide-number">36 / 45</div>
-        <h2>مثال سريع</h2>
-        <div class="activity-box" style="max-width: 900px; background: linear-gradient(145deg, rgba(255,215,0,0.2), rgba(255,165,0,0.2)); border: 3px solid #FFD700;">
-            <h3 style="font-size: 2.5em; color: #FFD700;">حفظ 10 كلمات إنجليزي؟</h3>
-            <div style="font-size: 2em; line-height: 2; margin-top: 40px;">
-                <p>كل كلمة = <span class="highlight">10 نقط</span></p>
-                <p>10 كلمات = <span class="highlight">100 نقطة</span></p>
-                <p>100 نقطة = <span class="highlight">Level Up!</span></p>
-                <p style="margin-top: 30px; font-size: 1.2em; color: #00ff88;">
-                    شوف توصل كام Level النهاردة! 🚀
-                </p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Slide 37: Break Time -->
-    <div class="slide break-slide" data-slide="37">
-        <div class="slide-number">37 / 45</div>
-        <h1>وقت الـ Break!</h1>
-        <div class="break-content">
-            <div class="break-timer" id="breakTimer">5:00</div>
-            <div style="font-size: 2.5em; line-height: 1.8;">
-                <p>✓ فكر في التحدي</p>
-                <p>✓ اتحرك شوية</p>
-                <p>✓ اشرب مياه</p>
-            </div>
-            <p style="font-size: 3em; margin-top: 60px; color: #FFD700;">
-                ولما نرجع... هندخل في العمق! 🌊
-            </p>
-        </div>
-    </div>
-
-    <!-- Summary Slides -->
-    <!-- Slide 38: Hour 1 Summary -->
-    <div class="slide dark-slide" data-slide="38">
-        <div class="slide-number">38 / 45</div>
-        <h1>خلاصة الساعة الأولى</h1>
-        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 40px; margin: 60px auto; max-width: 1200px;">
-            <div class="activity-box" style="border: 3px solid #FFD700;">
-                <h3 style="font-size: 2.5em; color: #FFD700;">الطاقة ⚡</h3>
-                <ul class="list" style="font-size: 1.5em;">
-                    <li>النوم + التغذية + الحركة</li>
-                    <li>ناقص الاستنزاف العقلي</li>
-                    <li>قلل القرارات</li>
-                    <li>بنك الطاقة</li>
-                </ul>
-            </div>
-            <div class="activity-box" style="border: 3px solid #00ff88;">
-                <h3 style="font-size: 2.5em; color: #00ff88;">الشغف 🔥</h3>
-                <ul class="list" style="font-size: 1.5em;">
-                    <li>التقدم المرئي</li>
-                    <li>الفضول</li>
-                    <li>بدون خوف من الحكم</li>
-                    <li>زي Netflix!</li>
-                </ul>
-            </div>
-        </div>
-    </div>
-
-    <!-- Slide 39: Key Takeaways -->
-    <div class="slide flow-slide" data-slide="39">
-        <div class="slide-number">39 / 45</div>
-        <h2>الدروس المهمة</h2>
-        <div style="font-size: 2.5em; line-height: 2; margin-top: 60px;">
-            <p>1️⃣ الـ Flow <span class="highlight">علم</span> مش حظ</p>
-            <p>2️⃣ الطاقة <span class="highlight">قرار</span> مش مزاج</p>
-            <p>3️⃣ الشغف <span class="highlight">يُصنع</span> مش يُولد</p>
-            <p>4️⃣ المعادلة <span class="highlight">ضرب</span> مش جمع</p>
-        </div>
-    </div>
-
-    <!-- Slide 40: Interactive Review -->
-    <div class="slide dark-slide" data-slide="40">
-        <div class="slide-number">40 / 45</div>
-        <h2>مراجعة تفاعلية</h2>
-        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 40px; margin: 60px auto; max-width: 1000px;">
-            <div class="activity-box">
-                <h3 style="font-size: 2em; color: #FFD700;">سؤال 1</h3>
-                <p style="font-size: 1.5em;">ليه Netflix بيخلينا نقعد 8 ساعات؟</p>
-            </div>
-            <div class="activity-box">
-                <h3 style="font-size: 2em; color: #FFD700;">سؤال 2</h3>
-                <p style="font-size: 1.5em;">إيه أكبر عدو للطاقة؟</p>
-            </div>
-            <div class="activity-box">
-                <h3 style="font-size: 2em; color: #FFD700;">سؤال 3</h3>
-                <p style="font-size: 1.5em;">الـ Flow بيحصل امتى؟</p>
-            </div>
-            <div class="activity-box">
-                <h3 style="font-size: 2em; color: #FFD700;">سؤال 4</h3>
-                <p style="font-size: 1.5em;">ليه ستيف جوبز كان بيلبس نفس اللبس؟</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Slide 41: What's Next -->
-    <div class="slide passion-slide" data-slide="41">
-        <div class="slide-number">41 / 45</div>
-        <h1>الساعة التانية</h1>
-        <h2 style="margin-top: 40px; color: #FFD700;">البناء العميق</h2>
-        <div class="equation equation-big" style="margin-top: 60px;">
-            E × P = (A + C) × M²
-        </div>
-        <p style="font-size: 2.5em; margin-top: 40px;">
-            المعادلة الموسعة الكاملة! 🚀
-        </p>
-    </div>
-
-    <!-- Slide 42: Action Items -->
-    <div class="slide dark-slide" data-slide="42">
-        <div class="slide-number">42 / 45</div>
-        <h2>Action Items</h2>
-        <div class="activity-box" style="max-width: 900px;">
-            <h3 style="font-size: 2.5em; color: #00ff88; margin-bottom: 40px;">جرب دلوقتي!</h3>
-            <div style="font-size: 2em; line-height: 2; text-align: right;">
-                <p>☐ احسب طاقتك الحالية</p>
-                <p>☐ حدد 3 قرارات تقدر تلغيها</p>
-                <p>☐ اختار مهمة وحولها للعبة</p>
-                <p>☐ اعمل Progress Bar لحاجة بتعملها</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Slide 43: Remember -->
-    <div class="slide flow-slide" data-slide="43">
-        <div class="slide-number">43 / 45</div>
-        <h1>تذكر دايماً</h1>
-        <div style="font-size: 3em; line-height: 2; margin-top: 60px;">
-            <p>أنت مش محتاج <span style="color: #ff4444;">موهبة خاصة</span></p>
-            <p>أنت مش محتاج <span style="color: #ff4444;">ظروف مثالية</span></p>
-            <p>أنت محتاج بس <span style="color: #00ff88;">تفهم المعادلة</span></p>
-        </div>
-    </div>
-
-    <!-- Slide 44: Closing Quote -->
-    <div class="slide dark-slide" data-slide="44">
-        <div class="slide-number">44 / 45</div>
-        <div style="font-size: 3em; line-height: 1.8; margin-top: 100px;">
-            <p style="color: #FFD700;">"The best moments in our lives are not the passive, relaxing times..."</p>
-            <p style="margin-top: 40px;">أحلى لحظات في حياتنا مش وقت الراحة...</p>
-            <p style="margin-top: 40px; color: #00ff88;">بل لما بنتحدى نفسنا ونحقق المستحيل!</p>
-            <p style="margin-top: 60px; font-size: 0.8em; opacity: 0.8;">- Mihaly Csikszentmihalyi</p>
-        </div>
-    </div>
-
-    <!-- Slide 45: End of Hour 1 -->
-    <div class="slide intro-slide" data-slide="45">
-        <div class="slide-number">45 / 45</div>
-        <h1 style="font-size: 6em;">🎯</h1>
-        <h1>نهاية الساعة الأولى</h1>
-        <h2 style="margin-top: 40px; color: #FFD700;">استعدوا للساعة التانية!</h2>
-        <div class="equation equation-big" style="margin-top: 60px;">
-            التدفق = الطاقة × الشغف
-        </div>
-        <p style="font-size: 2.5em; margin-top: 40px;">
-            الآن أنت تعرف السر! ✨
-        </p>
-    </div>
-
-    <div class="navigation-hint">
-        <span>التنقل:</span>
-        <span class="nav-key">→</span>
-        <span>التالي</span>
-        <span class="nav-key">←</span>
-        <span>السابق</span>
-        <span class="nav-key">Space</span>
-        <span>التالي</span>
-        <span class="nav-key">F</span>
-        <span>ملء الشاشة</span>
-    </div>
+    <!-- Navigation Dots -->
+    <div class="nav-dots"></div>
 
     <script>
-        let currentSlide = 1;
-        const totalSlides = 45;
-        let breakTimerInterval;
-        let activityTimerInterval;
-        
-        function updateProgressBar() {
-            const progressBar = document.getElementById('progressBar');
-            const progress = (currentSlide / totalSlides) * 100;
-            progressBar.style.width = progress + '%';
-        }
-        
-        function showSlide(slideNumber) {
-            if (slideNumber < 1 || slideNumber > totalSlides) return;
-            
-            // Hide all slides
-            document.querySelectorAll('.slide').forEach(slide => {
-                slide.classList.remove('active');
-            });
-            
-            // Show target slide
-            const targetSlide = document.querySelector(`[data-slide="${slideNumber}"]`);
-            if (targetSlide) {
-                setTimeout(() => {
-                    targetSlide.classList.add('active');
-                }, 50);
-                currentSlide = slideNumber;
-                updateProgressBar();
-                
-                // Handle special slides
-                if (slideNumber === 4) {
-                    startActivityTimer();
-                } else if (slideNumber === 37) {
-                    startBreakTimer();
-                } else {
-                    clearInterval(activityTimerInterval);
-                    clearInterval(breakTimerInterval);
-                }
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        // Create navigation dots
+        function createDots() {
+            const dotsContainer = document.querySelector('.nav-dots');
+            for (let i = 0; i < totalSlides; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'dot';
+                if (i === 0) dot.classList.add('active');
+                dot.addEventListener('click', () => goToSlide(i));
+                dotsContainer.appendChild(dot);
             }
         }
-        
+
+        // Update progress bar
+        function updateProgress() {
+            const progress = ((currentSlide + 1) / totalSlides) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        // Update dots
+        function updateDots() {
+            document.querySelectorAll('.dot').forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentSlide);
+            });
+        }
+
+        // Go to specific slide
+        function goToSlide(index) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = index;
+            slides[currentSlide].classList.add('active');
+            updateProgress();
+            updateDots();
+        }
+
+        // Next slide
         function nextSlide() {
-            showSlide(currentSlide + 1);
+            if (currentSlide < totalSlides - 1) {
+                goToSlide(currentSlide + 1);
+            }
         }
-        
+
+        // Previous slide
         function prevSlide() {
-            showSlide(currentSlide - 1);
+            if (currentSlide > 0) {
+                goToSlide(currentSlide - 1);
+            }
         }
-        
-        function startActivityTimer() {
-            let seconds = 30;
-            const timerElement = document.getElementById('timer');
-            if (!timerElement) return;
-            
-            clearInterval(activityTimerInterval);
-            activityTimerInterval = setInterval(() => {
-                const mins = Math.floor(seconds / 60);
-                const secs = seconds % 60;
-                timerElement.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-                
-                if (seconds <= 0) {
-                    clearInterval(activityTimerInterval);
-                    timerElement.textContent = "انتهى! 🎉";
-                }
-                seconds--;
-            }, 1000);
-        }
-        
-        function startBreakTimer() {
-            let seconds = 300; // 5 minutes
-            const timerElement = document.getElementById('breakTimer');
-            if (!timerElement) return;
-            
-            clearInterval(breakTimerInterval);
-            breakTimerInterval = setInterval(() => {
-                const mins = Math.floor(seconds / 60);
-                const secs = seconds % 60;
-                timerElement.textContent = `${mins}:${String(secs).padStart(2, '0')}`;
-                
-                if (seconds <= 0) {
-                    clearInterval(breakTimerInterval);
-                    timerElement.textContent = "يلا نرجع! 🚀";
-                }
-                seconds--;
-            }, 1000);
-        }
-        
+
         // Keyboard navigation
-        document.addEventListener('keydown', function(event) {
-            switch(event.key) {
-                case 'ArrowRight':
-                case ' ':
-                    event.preventDefault();
-                    nextSlide();
-                    break;
-                case 'ArrowLeft':
-                    event.preventDefault();
-                    prevSlide();
-                    break;
-                case 'Home':
-                    event.preventDefault();
-                    showSlide(1);
-                    break;
-                case 'End':
-                    event.preventDefault();
-                    showSlide(totalSlides);
-                    break;
-                case 'f':
-                case 'F':
-                    event.preventDefault();
-                    if (!document.fullscreenElement) {
-                        document.documentElement.requestFullscreen();
-                    } else {
-                        document.exitFullscreen();
-                    }
-                    break;
-                // Number shortcuts for quick navigation
-                case '1': case '2': case '3': case '4': case '5':
-                case '6': case '7': case '8': case '9':
-                    event.preventDefault();
-                    const slideNum = parseInt(event.key) * 5;
-                    showSlide(slideNum);
-                    break;
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                prevSlide();
+            } else if (e.key === 'Home') {
+                e.preventDefault();
+                goToSlide(0);
+            } else if (e.key === 'End') {
+                e.preventDefault();
+                goToSlide(totalSlides - 1);
+            } else if (e.key === 'f' || e.key === 'F') {
+                e.preventDefault();
+                toggleFullscreen();
             }
         });
-        
-        // Touch navigation for mobile/tablet
+
+        // Touch navigation for mobile
         let touchStartX = 0;
         let touchEndX = 0;
-        
-        document.addEventListener('touchstart', function(event) {
-            touchStartX = event.changedTouches[0].screenX;
+
+        document.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
         });
-        
-        document.addEventListener('touchend', function(event) {
-            touchEndX = event.changedTouches[0].screenX;
+
+        document.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
             handleSwipe();
         });
-        
+
         function handleSwipe() {
-            if (touchEndX < touchStartX - 50) {
-                nextSlide(); // Swipe left
-            }
-            if (touchEndX > touchStartX + 50) {
-                prevSlide(); // Swipe right
+            if (touchEndX < touchStartX - 50) nextSlide();
+            if (touchEndX > touchStartX + 50) prevSlide();
+        }
+
+        // Fullscreen toggle
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                document.exitFullscreen();
             }
         }
-        
-        // Initialize on load
-        document.addEventListener('DOMContentLoaded', function() {
-            updateProgressBar();
-            showSlide(1);
+
+        // Initialize
+        createDots();
+        updateProgress();
+
+        // Auto-advance timer for break slide
+        let breakTimer;
+        function startBreakTimer() {
+            if (currentSlide === 48) { // Break slide
+                let seconds = 300; // 5 minutes
+                breakTimer = setInterval(() => {
+                    seconds--;
+                    const minutes = Math.floor(seconds / 60);
+                    const secs = seconds % 60;
+                    const display = `${minutes}:${secs.toString().padStart(2, '0')}`;
+                    const timerElement = document.querySelector('.break-timer');
+                    if (timerElement) {
+                        timerElement.textContent = display;
+                    }
+                    if (seconds <= 0) {
+                        clearInterval(breakTimer);
+                    }
+                }, 1000);
+            } else {
+                clearInterval(breakTimer);
+            }
+        }
+
+        // Watch for slide changes
+        const observer = new MutationObserver(() => {
+            startBreakTimer();
         });
-        
-        // Prevent accidental navigation away
-        window.addEventListener('beforeunload', function (e) {
-            e.preventDefault();
-            e.returnValue = '';
+
+        slides.forEach(slide => {
+            observer.observe(slide, { attributes: true, attributeFilter: ['class'] });
         });
     </script>
 </body>
