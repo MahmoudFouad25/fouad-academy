@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>المرحلة الأولى - المواقف 1-5</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #3a7bd5 100%);
+            color: white;
+            overflow: hidden;
+            height: 100vh;
+            direction: rtl;
+        }
+        
+        .slide {
+            display: none;
+            height: 100vh;
+            width: 100vw;
+            position: relative;
+            padding: 80px 120px;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.8s ease;
+        }
+        
+        .slide.active {
+            display: flex;
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .slide-header {
+            position: absolute;
+            top: 40px;
+            right: 120px;
+            left: 120px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 28px;
+            font-weight: 600;
+            opacity: 0.9;
+        }
+        
+        .slide-counter {
+            background: rgba(255,255,255,0.2);
+            padding: 15px 25px;
+            border-radius: 50px;
+            backdrop-filter: blur(10px);
+            font-size: 24px;
+        }
+        
+        .stage-title {
+            font-size: 32px;
+            color: #FFD700;
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            font-size: 72px;
+            font-weight: 900;
+            margin-bottom: 40px;
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes glow {
+            from { filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.3)); }
+            to { filter: drop-shadow(0 0 40px rgba(255, 215, 0, 0.6)); }
+        }
+        
+        h2 {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 30px;
+            color: #E6F3FF;
+        }
+        
+        .subtitle {
+            font-size: 36px;
+            font-weight: 400;
+            color: #B8D4F0;
+            margin-bottom: 60px;
+            font-style: italic;
+        }
+        
+        .situation-title {
+            font-size: 48px;
+            font-weight: 700;
+            color: #FFD700;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+        
+        .situation-emoji {
+            font-size: 60px;
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .situation-description {
+            font-size: 36px;
+            font-weight: 400;
+            color: #E6F3FF;
+            line-height: 1.6;
+            max-width: 1200px;
+            margin: 0 auto 60px;
+            background: rgba(255,255,255,0.1);
+            padding: 50px;
+            border-radius: 25px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255,255,255,0.2);
+        }
+        
+        .option-card {
+            background: rgba(255,255,255,0.15);
+            border-radius: 30px;
+            padding: 60px;
+            margin: 30px auto;
+            max-width: 1100px;
+            width: 100%;
+            backdrop-filter: blur(15px);
+            border: 3px solid;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            transform: scale(0.9);
+            animation: slideIn 0.8s ease-out forwards;
+        }
+        
+        @keyframes slideIn {
+            to { transform: scale(1); }
+        }
+        
+        .option-a { border-color: #FF6B6B; }
+        .option-b { border-color: #4ECDC4; }
+        .option-c { border-color: #45B7D1; }
+        
+        .option-header {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 25px;
+        }
+        
+        .option-a .option-header { color: #FF6B6B; }
+        .option-b .option-header { color: #4ECDC4; }
+        .option-c .option-header { color: #45B7D1; }
+        
+        .option-icon {
+            font-size: 60px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        .option-content {
+            list-style: none;
+            font-size: 32px;
+            line-height: 1.8;
+        }
+        
+        .option-content li {
+            margin-bottom: 20px;
+            padding-right: 35px;
+            position: relative;
+        }
+        
+        .option-content li:before {
+            content: "★";
+            position: absolute;
+            right: 0;
+            color: #FFD700;
+            font-size: 28px;
+        }
+        
+        .intro-slide {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .instructions {
+            font-size: 28px;
+            color: #B8D4F0;
+            line-height: 1.6;
+            max-width: 1000px;
+            margin: 0 auto;
+            text-align: right;
+        }
+        
+        .instructions ul {
+            list-style: none;
+            margin-top: 30px;
+        }
+        
+        .instructions li {
+            margin-bottom: 20px;
+            padding-right: 35px;
+            position: relative;
+        }
+        
+        .instructions li:before {
+            content: "✓";
+            position: absolute;
+            right: 0;
+            color: #4ECDC4;
+            font-weight: bold;
+            font-size: 24px;
+        }
+        
+        .progress-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 8px;
+            background: linear-gradient(90deg, #FFD700, #FFA500);
+            transition: width 0.5s ease;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+            z-index: 1000;
+        }
+        
+
+        
+        @media (max-width: 1200px) {
+            .slide { padding: 60px 80px; }
+            h1 { font-size: 60px; }
+            h2 { font-size: 40px; }
+            .subtitle { font-size: 28px; }
+            .situation-title { font-size: 36px; }
+            .situation-description { font-size: 28px; }
+            .option-header { font-size: 36px; }
+            .option-content { font-size: 26px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progressBar"></div>
+
+    <!-- الشريحة 1: المقدمة -->
+    <div class="slide intro-slide active" data-slide="1">
+        <div class="slide-header">
+            <div class="stage-title">رحلة اكتشاف الذات</div>
+            <div class="slide-counter">1 / 23</div>
+        </div>
+        <h1>المرحلة الأولى</h1>
+        <h2>اكتشاف محركك الأساسي</h2>
+        <div class="subtitle">"ما الذي يحركك من الداخل؟"</div>
+    </div>
+
+    <!-- الشريحة 2: التعليمات -->
+    <div class="slide" data-slide="2">
+        <div class="slide-header">
+            <div class="stage-title">تعليمات المرحلة</div>
+            <div class="slide-counter">2 / 23</div>
+        </div>
+        <h2>كيف تجيب على الأسئلة؟</h2>
+        <div class="instructions">
+            <p>في هذه المرحلة، سنستكشف معاً ما يحركك في المواقف المختلفة.</p>
+            <ul>
+                <li>اقرأ كل موقف بتأنٍ، وتخيل نفسك فيه</li>
+                <li>اختر الاستجابة الأقرب لما تشعر به فعلاً</li>
+                <li>لا تفكر كثيراً - الإجابة الأولى غالباً هي الأصدق</li>
+                <li>لا توجد إجابة صحيحة أو خاطئة</li>
+                <li>اكتب اختيارك في الورقة المرفقة</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- الموقف 1 -->
+    <div class="slide" data-slide="3">
+        <div class="slide-header">
+            <div class="stage-title">المرحلة الأولى</div>
+            <div class="slide-counter">3 / 23</div>
+        </div>
+        <div class="situation-title">
+            <span class="situation-emoji">👶</span>
+            الموقف الأول
+            <span class="situation-emoji">👶</span>
+        </div>
+        <h2>"طفل صغير يبكي في مكان عام"</h2>
+        <div class="situation-description">
+            أنت ترى طفلاً يبكي بشدة ووالدته تحاول تهدئته دون جدوى
+        </div>
+    </div>
+
+    <div class="slide" data-slide="4">
+        <div class="slide-header">
+            <div class="stage-title">الموقف الأول - الخيار الأول</div>
+            <div class="slide-counter">4 / 23</div>
+        </div>
+        <div class="option-card option-a">
+            <div class="option-header">
+                <span class="option-icon">🔥</span>
+                الخيار (أ)
+            </div>
+            <h2>أشعر برغبة في:</h2>
+            <ul class="option-content">
+                <li>إيجاد حل سريع للموقف</li>
+                <li>معرفة السبب وإصلاحه</li>
+                <li>المساعدة في إيقاف البكاء</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="slide" data-slide="5">
+        <div class="slide-header">
+            <div class="stage-title">الموقف الأول - الخيار الثاني</div>
+            <div class="slide-counter">5 / 23</div>
+        </div>
+        <div class="option-card option-b">
+            <div class="option-header">
+                <span class="option-icon">❤️</span>
+                الخيار (ب)
+            </div>
+            <h2>أشعر برغبة في:</h2>
+            <ul class="option-content">
+                <li>احتضان الطفل ومواساته</li>
+                <li>التواصل مع مشاعره وتهدئته</li>
+                <li>مشاركة الأم في قلقها</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="slide" data-slide="6">
+        <div class="slide-header">
+            <div class="stage-title">الموقف الأول - الخيار الثالث</div>
+            <div class="slide-counter">6 / 23</div>
+        </div>
+        <div class="option-card option-c">
+            <div class="option-header">
+                <span class="option-icon">🧠</span>
+                الخيار (ج)
+            </div>
+            <h2>أشعر برغبة في:</h2>
+            <ul class="option-content">
+                <li>فهم الموقف أولاً قبل التصرف</li>
+                <li>التأكد من أن الوضع آمن</li>
+                <li>إيجاد طريقة مدروسة للمساعدة</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- الموقف 2 -->
+    <div class="slide" data-slide="7">
+        <div class="slide-header">
+            <div class="stage-title">المرحلة الأولى</div>
+            <div class="slide-counter">7 / 23</div>
+        </div>
+        <div class="situation-title">
+            <span class="situation-emoji">⚡</span>
+            الموقف الثاني
+            <span class="situation-emoji">⚡</span>
+        </div>
+        <h2>"مشكلة في مجموعة تعمل/تعيش معها"</h2>
+        <div class="situation-description">
+            حدث خلاف بين شخصين في مجموعتك وبدأ يؤثر على الجميع
+        </div>
+    </div>
+
+    <div class="slide" data-slide="8">
+        <div class="slide-header">
+            <div class="stage-title">الموقف الثاني - الخيار الأول</div>
+            <div class="slide-counter">8 / 23</div>
+        </div>
+        <div class="option-card option-a">
+            <div class="option-header">
+                <span class="option-icon">🔥</span>
+                الخيار (أ)
+            </div>
+            <h2>تفكيري الأول:</h2>
+            <ul class="option-content">
+                <li>يجب حل هذا فوراً قبل أن يتفاقم</li>
+                <li>أحتاج لتولي زمام الأمور</li>
+                <li>هذا الخلاف يعطل كل شيء</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="slide" data-slide="9">
+        <div class="slide-header">
+            <div class="stage-title">الموقف الثاني - الخيار الثاني</div>
+            <div class="slide-counter">9 / 23</div>
+        </div>
+        <div class="option-card option-b">
+            <div class="option-header">
+                <span class="option-icon">❤️</span>
+                الخيار (ب)
+            </div>
+            <h2>تفكيري الأول:</h2>
+            <ul class="option-content">
+                <li>يؤلمني أن أرى هذا التوتر بينهم</li>
+                <li>أريد أن يعود الوئام للمجموعة</li>
+                <li>العلاقات أهم من أي خلاف</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="slide" data-slide="10">
+        <div class="slide-header">
+            <div class="stage-title">الموقف الثاني - الخيار الثالث</div>
+            <div class="slide-counter">10 / 23</div>
+        </div>
+        <div class="option-card option-c">
+            <div class="option-header">
+                <span class="option-icon">🧠</span>
+                الخيار (ج)
+            </div>
+            <h2>تفكيري الأول:</h2>
+            <ul class="option-content">
+                <li>أحتاج لفهم جذور المشكلة</li>
+                <li>ما هي المخاطر المحتملة؟</li>
+                <li>كيف نتجنب تكرار هذا؟</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- الموقف 3 -->
+    <div class="slide" data-slide="11">
+        <div class="slide-header">
+            <div class="stage-title">المرحلة الأولى</div>
+            <div class="slide-counter">11 / 23</div>
+        </div>
+        <div class="situation-title">
+            <span class="situation-emoji">🚀</span>
+            الموقف الثالث
+            <span class="situation-emoji">🚀</span>
+        </div>
+        <h2>"فرصة جديدة مع تحديات"</h2>
+        <div class="situation-description">
+            عُرضت عليك فرصة مثيرة لكنها تحمل مخاطر وتحديات
+        </div>
+    </div>
+
+    <div class="slide" data-slide="12">
+        <div class="slide-header">
+            <div class="stage-title">الموقف الثالث - الخيار الأول</div>
+            <div class="slide-counter">12 / 23</div>
+        </div>
+        <div class="option-card option-a">
+            <div class="option-header">
+                <span class="option-icon">🔥</span>
+                الخيار (أ)
+            </div>
+            <h2>أول ما يتحرك في داخلي:</h2>
+            <ul class="option-content">
+                <li>حماس للتحدي والإنجاز</li>
+                <li>رغبة في إثبات قدرتي</li>
+                <li>"أستطيع التعامل مع هذا"</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="slide" data-slide="13">
+        <div class="slide-header">
+            <div class="stage-title">الموقف الثالث - الخيار الثاني</div>
+            <div class="slide-counter">13 / 23</div>
+        </div>
+        <div class="option-card option-b">
+            <div class="option-header">
+                <span class="option-icon">❤️</span>
+                الخيار (ب)
+            </div>
+            <h2>أول ما يتحرك في داخلي:</h2>
+            <ul class="option-content">
+                <li>كيف سيؤثر هذا على من أحب؟</li>
+                <li>هل سأبتعد عن علاقاتي؟</li>
+                <li>أحتاج لمشاورة المقربين</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="slide" data-slide="14">
+        <div class="slide-header">
+            <div class="stage-title">الموقف الثالث - الخيار الثالث</div>
+            <div class="slide-counter">14 / 23</div>
+        </div>
+        <div class="option-card option-c">
+            <div class="option-header">
+                <span class="option-icon">🧠</span>
+                الخيار (ج)
+            </div>
+            <h2>أول ما يتحرك في داخلي:</h2>
+            <ul class="option-content">
+                <li>أحتاج معلومات أكثر</li>
+                <li>ما هي الضمانات؟</li>
+                <li>دعني أدرس كل الاحتمالات</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- الموقف 4 -->
+    <div class="slide" data-slide="15">
+        <div class="slide-header">
+            <div class="stage-title">المرحلة الأولى</div>
+            <div class="slide-counter">15 / 23</div>
+        </div>
+        <div class="situation-title">
+            <span class="situation-emoji">🤝</span>
+            الموقف الرابع
+            <span class="situation-emoji">🤝</span>
+        </div>
+        <h2>"شخص يطلب مساعدتك"</h2>
+        <div class="situation-description">
+            شخص تعرفه يمر بأزمة ويطلب دعمك
+        </div>
+    </div>
+
+    <div class="slide" data-slide="16">
+        <div class="slide-header">
+            <div class="stage-title">الموقف الرابع - الخيار الأول</div>
+            <div class="slide-counter">16 / 23</div>
+        </div>
+        <div class="option-card option-a">
+            <div class="option-header">
+                <span class="option-icon">🔥</span>
+                الخيار (أ)
+            </div>
+            <h2>استجابتي التلقائية:</h2>
+            <ul class="option-content">
+                <li>ما الحل العملي لمشكلته؟</li>
+                <li>كيف أساعده ليتجاوز هذا؟</li>
+                <li>أريد أن أمكنه من حل أزمته</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="slide" data-slide="17">
+        <div class="slide-header">
+            <div class="stage-title">الموقف الرابع - الخيار الثاني</div>
+            <div class="slide-counter">17 / 23</div>
+        </div>
+        <div class="option-card option-b">
+            <div class="option-header">
+                <span class="option-icon">❤️</span>
+                الخيار (ب)
+            </div>
+            <h2>استجابتي التلقائية:</h2>
+            <ul class="option-content">
+                <li>قلبي معه في محنته</li>
+                <li>أريد أن أخفف عنه</li>
+                <li>سأكون بجانبه مهما احتاج</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="slide" data-slide="18">
+        <div class="slide-header">
+            <div class="stage-title">الموقف الرابع - الخيار الثالث</div>
+            <div class="slide-counter">18 / 23</div>
+        </div>
+        <div class="option-card option-c">
+            <div class="option-header">
+                <span class="option-icon">🧠</span>
+                الخيار (ج)
+            </div>
+            <h2>استجابتي التلقائية:</h2>
+            <ul class="option-content">
+                <li>أحتاج لفهم الوضع بدقة</li>
+                <li>ما أفضل طريقة آمنة للمساعدة؟</li>
+                <li>كيف أدعمه دون التورط في مشاكل؟</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- الموقف 5 -->
+    <div class="slide" data-slide="19">
+        <div class="slide-header">
+            <div class="stage-title">المرحلة الأولى</div>
+            <div class="slide-counter">19 / 23</div>
+        </div>
+        <div class="situation-title">
+            <span class="situation-emoji">🏆</span>
+            الموقف الخامس
+            <span class="situation-emoji">🏆</span>
+        </div>
+        <h2>"إنجاز مهم في حياتك"</h2>
+        <div class="situation-description">
+            حققت إنجازاً كنت تسعى إليه
+        </div>
+    </div>
+
+    <div class="slide" data-slide="20">
+        <div class="slide-header">
+            <div class="stage-title">الموقف الخامس - الخيار الأول</div>
+            <div class="slide-counter">20 / 23</div>
+        </div>
+        <div class="option-card option-a">
+            <div class="option-header">
+                <span class="option-icon">🔥</span>
+                الخيار (أ)
+            </div>
+            <h2>أول شعور يغمرني:</h2>
+            <ul class="option-content">
+                <li>فخر بقدرتي على التحقيق</li>
+                <li>رضا عن جهدي وعملي</li>
+                <li>استعداد للهدف التالي</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="slide" data-slide="21">
+        <div class="slide-header">
+            <div class="stage-title">الموقف الخامس - الخيار الثاني</div>
+            <div class="slide-counter">21 / 23</div>
+        </div>
+        <div class="option-card option-b">
+            <div class="option-header">
+                <span class="option-icon">❤️</span>
+                الخيار (ب)
+            </div>
+            <h2>أول شعور يغمرني:</h2>
+            <ul class="option-content">
+                <li>سعادة بمشاركة هذا مع أحبائي</li>
+                <li>امتنان لمن دعمني</li>
+                <li>رغبة في الاحتفال مع الآخرين</li>
+            </ul>
+        </div>
+        <div class="next-hint">اضغط ← أو → للتنقل</div>
+    </div>
+
+    <div class="slide" data-slide="22">
+        <div class="slide-header">
+            <div class="stage-title">الموقف الخامس - الخيار الثالث</div>
+            <div class="slide-counter">22 / 23</div>
+        </div>
+        <div class="option-card option-c">
+            <div class="option-header">
+                <span class="option-icon">🧠</span>
+                الخيار (ج)
+            </div>
+            <h2>أول شعور يغمرني:</h2>
+            <ul class="option-content">
+                <li>ارتياح لأن الخطة نجحت</li>
+                <li>اطمئنان للنتيجة المضمونة</li>
+                <li>ثقة في قدرتي على التخطيط</li>
+            </ul>
+        </div>
+        <div class="next-hint">اضغط ← أو → للتنقل</div>
+    </div>
+
+    <!-- شريحة الانتهاء -->
+    <div class="slide" data-slide="23">
+        <div class="slide-header">
+            <div class="stage-title">انتهاء المواقف 1-5</div>
+            <div class="slide-counter">23 / 23</div>
+        </div>
+        <h1>✅ انتهيت من المواقف 1-5</h1>
+        <div class="instructions">
+            <h2 style="color: #FFD700; margin-bottom: 40px;">راجع إجاباتك:</h2>
+            <div style="background: rgba(255,255,255,0.15); padding: 50px; border-radius: 30px; font-size: 32px;">
+                <p><strong>🔥 (أ):</strong> _____ مرة</p>
+                <p style="margin: 30px 0;"><strong>❤️ (ب):</strong> _____ مرة</p>
+                <p><strong>🧠 (ج):</strong> _____ مرة</p>
+            </div>
+            <p style="margin-top: 40px; font-size: 24px; color: #FFD700;">
+                احتفظ بالنتيجة لتجمعها مع المواقف 6-10
+            </p>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 1;
+        const totalSlides = 23;
+        
+        function updateProgressBar() {
+            const progressBar = document.getElementById('progressBar');
+            const progress = (currentSlide / totalSlides) * 100;
+            progressBar.style.width = progress + '%';
+        }
+
+        function showSlide(slideNumber) {
+            document.querySelectorAll('.slide').forEach(slide => {
+                slide.classList.remove('active');
+            });
+            
+            const targetSlide = document.querySelector(`[data-slide="${slideNumber}"]`);
+            if (targetSlide) {
+                targetSlide.classList.add('active');
+                currentSlide = slideNumber;
+                updateProgressBar();
+            }
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides) {
+                showSlide(currentSlide + 1);
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 1) {
+                showSlide(currentSlide - 1);
+            }
+        }
+
+        // التحكم بالكيبورد
+        document.addEventListener('keydown', function(event) {
+            switch(event.key) {
+                case 'ArrowRight':
+                case ' ':
+                case 'Enter':
+                    event.preventDefault();
+                    nextSlide();
+                    break;
+                case 'ArrowLeft':
+                case 'Backspace':
+                    event.preventDefault();
+                    prevSlide();
+                    break;
+                case 'Home':
+                    event.preventDefault();
+                    showSlide(1);
+                    break;
+                case 'End':
+                    event.preventDefault();
+                    showSlide(totalSlides);
+                    break;
+                case 'Escape':
+                    event.preventDefault();
+                    if (document.fullscreenElement) {
+                        document.exitFullscreen();
+                    } else {
+                        document.documentElement.requestFullscreen();
+                    }
+                    break;
+            }
+        });
+
+        // تشغيل عند تحميل الصفحة
+        document.addEventListener('DOMContentLoaded', function() {
+            updateProgressBar();
+        });
+    </script>
+</body>
+</html>
