@@ -576,7 +576,7 @@
                         <p>طاقة وفعالية في الحياة</p>
                     </div>
                     <div class="pattern-item">
-                        <h4 style="color: #6f42c1;">🏔️ استقرار</h4>
+                        <h4 style="color: #ffc107;">🏔️ استقرار</h4>
                         <p>ثبات داخلي مع عدم الجمود</p>
                     </div>
                 </div>
@@ -705,6 +705,11 @@
                         <h4 style="color: #28a745;">💪 التدريب على المرونة</h4>
                         <p>مع الوعي والممارسة، نقدر نتعلم إزاي نستخدم الدوافع التانية ونمارس الاتجاهات المختلفة للانتباه. الشخص المركز على الهمة يتعلم إزاي يطور دافع الأنس، والشخص المركز على الأنس يتعلم إزاي يطور دافع اليقين، وهكذا.</p>
                     </div>
+                        <div class="pattern-item">
+        <h4 style="color: #17a2b8;">🎯 التطبيق العملي</h4>
+        <p>الممارسة اليومية لهذه المفاهيم تحولها من مجرد معرفة نظرية إلى أدوات حقيقية للتغيير والنمو في حياتنا.</p>
+    </div>
+
                 </div>
 
                 <div class="highlight-box">
@@ -732,9 +737,15 @@
 
         <!-- Author Signature -->
         <div class="author-signature">
-            <h2 style="color: #ffc107; margin-bottom: 20px;">👨‍🏫 الكوتش محمود فؤاد</h2>
-            <p>مؤسس منظور الفؤاد في فهم الطبيعة الإنسانية- سفير الرحمة بجامعة ستانفورد</p>
+    <div style="text-align: center; margin-bottom: 30px;">
+        <div style="width: 80px; height: 80px; background: linear-gradient(45deg, #ffc107, #28a745); border-radius: 50%; margin: 0 auto 20px auto; display: flex; align-items: center; justify-content: center; font-size: 2rem;">👨‍🏫</div>
+        <h2 style="color: #ffc107; margin-bottom: 10px; font-size: 2.2rem;">الكوتش محمود فؤاد</h2>
+        <p style="color: #28a745; font-size: 1.3rem; margin-bottom: 15px; font-weight: bold;">مؤسس منظور الفؤاد في فهم الطبيعة الإنسانية</p>
+        <div style="background: rgba(255,193,7,0.1); padding: 15px; border-radius: 15px; border: 2px solid #ffc107;">
+            <p style="color: #ffc107; font-size: 1.1rem; margin: 0;">✨ سفير الرحمة بجامعة ستانفورد ✨</p>
         </div>
+    </div>
+</div>
     </div>
 
     <div class="scroll-indicator" onclick="scrollToTop()">
@@ -769,25 +780,7 @@
             observer.observe(section);
         });
 
-        // Toggle expand functionality
-        function toggleExpand(element) {
-            const expandable = element.querySelector('.expandable');
-            const btn = element.querySelector('.expand-btn');
-            
-            if (expandable.classList.contains('expanded')) {
-                expandable.classList.remove('expanded');
-                btn.textContent = btn.textContent.includes('المزيد') ? 'اقرأ المزيد' : 
-                                  btn.textContent.includes('أكثر') ? 'اعرف أكثر' : 
-                                  btn.textContent.includes('عمق') ? 'تعمق أكثر' : 
-                                  btn.textContent.includes('أعمق') ? 'فهم أعمق' : 
-                                  btn.textContent.includes('التأثير') ? 'اكتشف التأثير' : 
-                                  btn.textContent.includes('التفاعل') ? 'تعرف على التفاعل' : 'اقرأ المزيد';
-            } else {
-                expandable.classList.add('expanded');
-                btn.textContent = 'إخفاء';
-            }
-        }
-
+        
         // Scroll to top functionality
         function scrollToTop() {
             window.scrollTo({
